@@ -15,6 +15,37 @@ Account *first_account = NULL; // Initialize a pointer to the first account in t
 int generate_account_number() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
+void login()
+{
+    Account *login_credentials = (Account *) malloc(sizeof(Account));
+
+    printf("\n==================\n");
+    printf("Enter username: \n");
+    scanf("%49s", login_credentials->name);
+    printf("Enter password: \n");
+    scanf("%49s", login_credentials->password);
+
+    //FUNCTION!
+    printf("Function for username and password validation goes here.!!");
+}
+
+
+//Function to call after retrieval
+int operation_menu(){
+    system("cls");
+    int op;
+
+    printf("\n===== OPERATION MENU =====\n");
+    printf("1. Display accounts\n");
+    printf("2. Add new account\n");
+    printf("3. Update existing account\n");
+    printf("4. Delete existing account\n");
+    printf("5. Exit\n\n");
+    printf("Enter your choice: ");
+    scanf("%d", &op);
+
+    return op;
+}
 
 void add_account() {
     Account *new_account = (Account *) malloc(sizeof(Account)); //create struct and populate its fields
@@ -22,7 +53,7 @@ void add_account() {
     char ch;
     int i = 0;
     new_account->number = generate_account_number();
-    
+
     printf("Account number: %04d\n", new_account->number);  // print the account number with leading zeros
     printf("Enter full name: ");
     scanf(" %[^\n]", new_account->name);
@@ -90,7 +121,7 @@ int main() {
         switch(main_menu()) {
             case 1:
                 system("cls");
-                printf("Log in function goes here.\nJerryBoy");
+                login();
                 break;
             case 2:
                 system("cls");
@@ -110,3 +141,5 @@ int main() {
     return 0;
 
 }
+
+
