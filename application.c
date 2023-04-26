@@ -18,14 +18,16 @@ int generate_account_number() {
 
 void add_account() {
     Account *new_account = (Account *) malloc(sizeof(Account)); //create struct and populate its fields
+    char confirm_password[20];
+    char ch;
+    int i = 0;
     new_account->number = generate_account_number();
+    
     printf("Account number: %04d\n", new_account->number);  // print the account number with leading zeros
     printf("Enter full name: ");
     scanf(" %[^\n]", new_account->name);
 
     printf("Enter password: ");
-    int i = 0;
-    char ch;
     while ((ch = getch()) != '\r') {
         if (i < 20 && ch != '\b') {
             new_account->password[i++] = ch;
@@ -39,7 +41,6 @@ void add_account() {
 
     printf("\nConfirm password: ");
     i = 0;
-    char confirm_password[20];
     while ((ch = getch()) != '\r') {
         if (i < 20 && ch != '\b') {
             confirm_password[i++] = ch;
