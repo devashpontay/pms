@@ -87,7 +87,6 @@ void addAccount() {
     srand(time(NULL));
     sprintf(new_account->idNum, "%d", genIdNum());
 
-    printf("Account number: %s\n", new_account->idNum);  // print the account number with leading zeros
     printf("Enter full name: ");
     scanf(" %[^\n]", new_account->fullname);
 
