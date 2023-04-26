@@ -19,6 +19,7 @@ int generate_account_number() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
 int retrieve(char *username, char *password);
+int operation_menu();
 void login()
 {
     Account acc;
@@ -61,7 +62,7 @@ int operation_menu(){
     return op;
 }
 
-void save_sampleRecords(){
+void saveAccount(){
     // This function saves all the account records to a file named "accountsDB.txt".
     // It appends new records to the end of the file if it already exists.
 
@@ -78,7 +79,7 @@ void save_sampleRecords(){
 }
 
 
-void add_account() {
+void addAccount() {
     Account *new_account = (Account *) malloc(sizeof(Account)); //create struct and populate its fields
     char confirm_password[20];
     char ch;
@@ -135,7 +136,7 @@ void add_account() {
     system("pause");
 }
 
-int main_menu() {
+int loginMenu() {
     system("cls");
     int op;
 
@@ -268,7 +269,7 @@ int main() {
 
     while(1) {
 
-        switch(main_menu()) {
+        switch(loginMenu()) {
             case 1:
                 system("cls");
                 //retrive();
@@ -277,9 +278,9 @@ int main() {
             case 2:
                 system("cls");
                 //printf("Create Vault Account function goes here.\n");
-                add_account();
+                addAccount();
                 encryption();
-                save_sampleRecords();
+                saveAccount();
                 free(first_account);
                 break;
 
