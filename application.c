@@ -15,7 +15,7 @@ typedef struct Account {
 
 Account *first_account = NULL; // Initialize a pointer to the first account in the linked list
 
-int generate_account_number() {
+int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
 int retrieve(char *username, char *password);
@@ -35,7 +35,7 @@ void login()
     if(isValid == 1){
         printf("Successful!\n");
         system("pause");
-        operation_menu();
+        operationMenu();
     }
     else{
         printf("Failed!");
@@ -85,7 +85,7 @@ void addAccount() {
     char ch;
     int i = 0;
     srand(time(NULL));
-    sprintf(new_account->idNum, "%d", generate_account_number());
+    sprintf(new_account->idNum, "%d", genIdNum());
 
     printf("Account number: %s\n", new_account->idNum);  // print the account number with leading zeros
     printf("Enter full name: ");
