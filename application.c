@@ -18,10 +18,9 @@ Account *first_account = NULL; // Initialize a pointer to the first account in t
 int generate_account_number() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
-int retrive(char *username, char *password);
+int retrieve(char *username, char *password);
 void login()
 {
-    //Account *login_credentials = (Account *) malloc(sizeof(Account));
     Account acc;
 
     printf("\n==================\n");
@@ -30,22 +29,20 @@ void login()
     printf("Enter password: \n");
     scanf("%49s", acc.password);
 
-    int isValid = retrive(acc.username, acc.password);
+    int isValid = retrieve(acc.username, acc.password);
 
     if(isValid == 1){
-        printf("Successful!");
+        printf("Successful!\n");
         system("pause");
+        operation_menu();
     }
     else{
         printf("Failed!");
         system("pause");
         return;
     }
-    //FUNCTION!
-    printf("Function for username and password validation goes here.!!");
 
 }
-
 
 //Function to call after retrieval
 int operation_menu(){
@@ -65,17 +62,19 @@ int operation_menu(){
 }
 
 void save_sampleRecords(){
+    // This function saves all the account records to a file named "accountsDB.txt".
+    // It appends new records to the end of the file if it already exists.
+
     FILE *fs;
     fs = fopen("accountsDB.txt", "a"); // open the file in "append" mode to add new records to the end of the file
 
     Account *p;
     p = first_account;
 
-
     fprintf(fs, "%s@%s@%s@%s@%d\n", p->idNum, p->fullname, p->username, p->password, p->key);
 
     fclose(fs);
-    printf("Successfully saved all accounts to file.\n");
+    //printf("Successfully saved all accounts to file.\n");
 }
 
 
@@ -232,42 +231,33 @@ Account decryption(Account p) {
     return p;
 }
 
+int retrieve(char *username, char *password){
 
-int retrive(char *username, char *password){
+    // This function retrieves account records from a file and checks if a given username and password match any record.
+
     Account obj;
     FILE *fs;
-    //char nn[50], pw[20];
 
-    fs = fopen("accountDB.txt", "r");
-    if (fs == NULL) {
-        printf("Error opening accountDB.txt\n");
-        return 0;
+    fs = fopen("accountsDB.txt", "r");
+     // Loop through the file until the end is reached or a record matching the given username and password is found.
+    while(fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.fullname, obj.username, obj.password, &obj.key)==5){
+      obj =  decryption(obj);
+
+        // If the record matches the given username and password, return 1 and pause the program.
+        if(strcmp(username, obj.username )== 0 && strcmp(password, obj.password)==0){
+            return 1;
+            system("pause");
+        }
+
+        // If the record matches the given username but not the password, print an error message and pause the program.
+        if(strcmp(username, obj.username)==0 && strcmp(password, obj.password) != 0){
+            printf("Wrong password! Please try again...\n");
+            system("pause");
+            login();
+        }
     }
-
-
-     printf("debugged");
-     system("pause");
-   if (fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.fullname, obj.username, obj.password, &obj.key) == 5) {
-    obj = decryption(obj);
-
-    printf("id: %s\n", obj.idNum);
-    printf("fullname: %s\n", obj.fullname);
-    printf("username: %s\n", obj.username);
-    printf("password: %s\n", obj.password);
-    printf("key: %d\n", obj.key);
-
-    if (strcmp(username, obj.username) == 0 && strcmp(password, obj.password) == 0) {
-        fclose(fs);
-        return 1;
-    } else if (strcmp(username, obj.username) == 0 && strcmp(password, obj.password) != 0) {
-        printf("Wrong password! Please try again...\n");
-        fclose(fs);
-        return 0;
-    }
-    } else {
-    printf("Error reading account data from file\n");
-    }
-
+    // If no matching record is found, return 0.
+    return 0;
 }
 
 int main() {
