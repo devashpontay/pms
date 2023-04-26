@@ -19,7 +19,7 @@ int generate_account_number() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
 int retrieve(char *username, char *password);
-int operation_menu();
+int operationMenu();
 void login()
 {
     Account acc;
@@ -46,7 +46,7 @@ void login()
 }
 
 //Function to call after retrieval
-int operation_menu(){
+int operationMenu(){
     system("cls");
     int op;
 
