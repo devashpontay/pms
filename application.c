@@ -26,9 +26,9 @@ void login()
 
     printf("\n==================\n");
     printf("Enter username: \n");
-    scanf("%49s", acc.username);
+    scanf("%30s", acc.username);
     printf("Enter password: \n");
-    scanf("%49s", acc.password);
+    scanf("%19s", acc.password);
 
     int isValid = retrieve(acc.username, acc.password);
 
@@ -55,8 +55,7 @@ int operationMenu(){
     printf("2. Add new account\n");
     printf("3. Update existing account\n");
     printf("4. Delete existing account\n");
-    //LOGOUT or EXIT???
-    printf("5. Exit\n\n");
+    printf("5. Exit and Save\n\n");
     printf("Enter your choice: ");
     scanf("%d", &op);
 
@@ -276,7 +275,7 @@ int main() {
                 login();
                 //retrieve process here...
                 while(1){
-                    switch(operation_menu()) {
+                    switch(operationMenu()) {
                         case 1:
                             system("cls");
                             printf("Display function goes here!");
@@ -294,15 +293,15 @@ int main() {
                             printf("Delete function goes here!");
                             break;
                         case 5:
-                            //exit or logout????
-                            printf("Exiting the program...\n");
+                            printf("Saving then exiting the program...\n");
+                            system("pause");
+                            //printf("Save function goes here ")
                             exit(0);
                             break;
                         default:
                             printf("Invalid choice! Please try again.\n");
                             break;
                     }
-                    //can put conditional statement here if logout!
                 }
                 break;
             case 2:
