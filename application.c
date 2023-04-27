@@ -2,36 +2,52 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct Account {
-    int number;
-    char name[50];
+    char idNum[10];
+    char fullname[31];
+    char username[31];
     char password[20];
+    int key;
     struct Account *next;
 } Account;
 
 Account *first_account = NULL; // Initialize a pointer to the first account in the linked list
 
-int generate_account_number() {
+int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
+int retrieve(char *username, char *password);
+int operationMenuUI();
+void operationMenu();
 void login()
 {
-    Account *login_credentials = (Account *) malloc(sizeof(Account));
+    Account acc;
 
     printf("\n==================\n");
-    printf("Enter username: \n");
-    scanf("%49s", login_credentials->name);
-    printf("Enter password: \n");
-    scanf("%49s", login_credentials->password);
+    printf("\nEnter username: ");
+    scanf("%30s", acc.username);
+    printf("\nEnter password: ");
+    scanf("%19s", acc.password);
 
-    //FUNCTION!
-    printf("Function for username and password validation goes here.!!");
+    int isValid = retrieve(acc.username, acc.password);
+
+    if(isValid == 1){
+        printf("Successful!\n");
+        system("pause");
+        operationMenu();
+    }
+    else{
+        printf("Failed!");
+        system("pause");
+        return;
+    }
+
 }
 
-
 //Function to call after retrieval
-int operation_menu(){
+int operationMenuUI(){
     system("cls");
     int op;
 
@@ -40,23 +56,76 @@ int operation_menu(){
     printf("2. Add new account\n");
     printf("3. Update existing account\n");
     printf("4. Delete existing account\n");
-    printf("5. Exit\n\n");
+    printf("5. Exit and Save\n\n");
     printf("Enter your choice: ");
     scanf("%d", &op);
 
     return op;
 }
 
-void add_account() {
+void operationMenu(){
+
+    while(1){
+            switch(operationMenuUI()) {
+                case 1:
+                    system("cls");
+                    printf("Display function goes here!");
+                    break;
+                case 2:
+                    system("cls");
+                    printf("Add account function goes here!");
+                    break;
+                case 3:
+                    system("cls");
+                    printf("Update function goes here!");
+                    break;
+                case 4:
+                    system("cls");
+                    printf("Delete function goes here!");
+                    break;
+                case 5:
+                    printf("Saving then exiting the program...\n");
+                    system("pause");
+                    //printf("Save function goes here ")
+                    exit(0);
+                    break;
+                default:
+                    printf("Invalid choice! Please try again.\n");
+                    break;
+                }
+        }
+}
+
+void saveAccount(){
+    // This function saves all the account records to a file named "accountsDB.txt".
+    // It appends new records to the end of the file if it already exists.
+
+    FILE *fs;
+    fs = fopen("accountsDB.txt", "a"); // open the file in "append" mode to add new records to the end of the file
+
+    Account *p;
+    p = first_account;
+
+    fprintf(fs, "%s@%s@%s@%s@%d\n", p->idNum, p->fullname, p->username, p->password, p->key);
+
+    fclose(fs);
+    //printf("Successfully saved all accounts to file.\n");
+}
+
+
+void addAccount() {
     Account *new_account = (Account *) malloc(sizeof(Account)); //create struct and populate its fields
     char confirm_password[20];
     char ch;
     int i = 0;
-    new_account->number = generate_account_number();
+    srand(time(NULL));
+    sprintf(new_account->idNum, "%d", genIdNum());
 
-    printf("Account number: %04d\n", new_account->number);  // print the account number with leading zeros
     printf("Enter full name: ");
-    scanf(" %[^\n]", new_account->name);
+    scanf(" %[^\n]", new_account->fullname);
+
+    printf("Enter username: ");
+    scanf("%s", new_account->username);
 
     printf("Enter password: ");
     while ((ch = getch()) != '\r') {
@@ -90,6 +159,8 @@ void add_account() {
         return;
     }
 
+    new_account->key = rand() % 56 + 1;
+
     new_account->next = first_account; // next pointer of the new account to the current first account
 
     first_account = new_account; // first account pointer to the new account
@@ -98,7 +169,7 @@ void add_account() {
     system("pause");
 }
 
-int main_menu() {
+int loginMenu() {
     system("cls");
     int op;
 
@@ -112,22 +183,140 @@ int main_menu() {
     return op;
 }
 
+
+void encryption() {
+    Account *p;
+    p = first_account;
+    srand(time(NULL));
+
+
+    for (int i = 0; i < 4; i++) {
+        char *field = NULL;
+        int is_string = 0;
+
+        // Determine which field to encrypt
+        switch (i) {
+            case 0:
+                field = p->idNum;
+                is_string = 1;
+                break;
+            case 1:
+                field = p->fullname;
+                is_string = 1;
+                break;
+            case 2:
+                field = p->username;
+                is_string = 1;
+                break;
+            case 3:
+                field = p->password;
+                is_string = 1;
+                break;
+            default:
+                break;
+        }
+
+        if (is_string) {
+            // encrypt the field
+            for (int j = 0; field[j] != '\0'; j++) {
+                int ascii_code = (int) field[j];
+                field[j] = (char) ascii_code + p->key;
+            }
+        }
+    }
+}
+
+Account decryption(Account p) {
+
+    for (int i = 0; i < 4; i++) {
+        char *field = NULL;
+        int is_string = 0;
+
+        // Determine which field to decrypt
+        switch (i) {
+            case 0:
+                field = p.idNum;
+                is_string = 1;
+                break;
+            case 1:
+                field = p.fullname;
+                is_string = 1;
+                break;
+            case 2:
+                field = p.username;
+                is_string = 1;
+                break;
+            case 3:
+                field = p.password;
+                is_string = 1;
+                break;
+            default:
+                break;
+        }
+
+        if (is_string) {
+            //decrypt the field
+            for (int j = 0; field[j] != '\0'; j++) {
+                int ascii_code = (int) field[j];
+                field[j] = (char) ascii_code - p.key;
+            }
+        }
+    }
+    return p;
+}
+
+int retrieve(char *username, char *password){
+
+    // This function retrieves account records from a file and checks if a given username and password match any record.
+
+    Account obj;
+    FILE *fs;
+
+    fs = fopen("accountsDB.txt", "r");
+     // Loop through the file until the end is reached or a record matching the given username and password is found.
+    while(fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.fullname, obj.username, obj.password, &obj.key)==5){
+      obj =  decryption(obj);
+
+        // If the record matches the given username and password, return 1 and pause the program.
+        if(strcmp(username, obj.username )== 0 && strcmp(password, obj.password)==0){
+            return 1;
+            system("pause");
+        }
+
+        // If the record matches the given username but not the password, print an error message and pause the program.
+        if(strcmp(username, obj.username)==0 && strcmp(password, obj.password) != 0){
+            printf("Wrong password! Please try again...\n");
+            system("pause");
+            login();
+        }
+    }
+    // If no matching record is found, return 0.
+    return 0;
+}
+
 int main() {
     // WRITE CODE HERE
     // connected to you billona sarap mo
     // connected ~jerry
 
+
     while(1) {
-        switch(main_menu()) {
+
+        switch(loginMenu()) {
             case 1:
                 system("cls");
+                //retrive();
                 login();
                 break;
             case 2:
                 system("cls");
                 //printf("Create Vault Account function goes here.\n");
-                add_account();
+                addAccount();
+                encryption();
+                saveAccount();
+                free(first_account);
                 break;
+
             case 3:
                 printf("Exiting the program...\n");
                 exit(0);
@@ -141,5 +330,7 @@ int main() {
     return 0;
 
 }
+
+
 
 
