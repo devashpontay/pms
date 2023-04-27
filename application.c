@@ -40,6 +40,7 @@ int operation_menu(){
     printf("2. Add new account\n");
     printf("3. Update existing account\n");
     printf("4. Delete existing account\n");
+    //LOGOUT or EXIT???
     printf("5. Exit\n\n");
     printf("Enter your choice: ");
     scanf("%d", &op);
@@ -122,6 +123,36 @@ int main() {
             case 1:
                 system("cls");
                 login();
+                //retrieve process here...
+                while(1){
+                    switch(operation_menu()) {
+                        case 1:
+                            system("cls");
+                            printf("Display function goes here!");
+                            break;
+                        case 2:
+                            system("cls");
+                            printf("Add account function goes here!");
+                            break;
+                        case 3:
+                            system("cls");
+                            printf("Update function goes here!");
+                            break;
+                        case 4:
+                            system("cls");
+                            printf("Delete function goes here!");
+                            break;
+                        case 5:
+                            //exit or logout????
+                            printf("Exiting the program...\n");
+                            exit(0);
+                            break;
+                        default:
+                            printf("Invalid choice! Please try again.\n");
+                            break;
+                    }
+                    //can put conditional statement here if logout!
+                }
                 break;
             case 2:
                 system("cls");
