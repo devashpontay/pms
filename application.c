@@ -15,12 +15,26 @@ typedef struct Account {
 
 Account *first_account = NULL; // Initialize a pointer to the first account in the linked list
 
+
+typedef struct PreserveAccountData {
+    char link[50];
+    char username[31];
+    char pw[20];
+    struct PreserveAccountData *next;
+} PAD;
+
+PAD *insideFirstAccount = NULL;
+
 int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
+
 int retrieve(char *username, char *password);
+void preserveNewAccData(char *link, char *usern, char *pw);
+void displayAccRecord();
 int operationMenuUI();
 void operationMenu();
+
 void login()
 {
     Account acc;
@@ -52,9 +66,9 @@ int operationMenuUI(){
     int op;
 
     printf("\n===== OPERATION MENU =====\n");
-    printf("1. Display accounts\n");
-    printf("2. Add new account\n");
-    printf("3. Update existing account\n");
+    printf("1. Add new account\n");
+    printf("2. Update existing accoun\n");
+    printf("3. Display accounts\n");
     printf("4. Delete existing account\n");
     printf("5. Exit and Save\n\n");
     printf("Enter your choice: ");
@@ -69,15 +83,23 @@ void operationMenu(){
             switch(operationMenuUI()) {
                 case 1:
                     system("cls");
-                    printf("Display function goes here!");
+                    printf("WELCOME TO YOURS TRULY! \n\n");
+                    char link[31], username[31], password[31];
+                    printf("LINK: ");scanf("%s",link);
+                    printf("username: ");scanf("%s", username);
+                    printf("password: ");scanf("%s", password);
+
+                    system("pause");
+                    preserveNewAccData(link, username, password);
                     break;
+
                 case 2:
                     system("cls");
-                    printf("Add account function goes here!");
+                    printf("Update function goes here!");
                     break;
                 case 3:
                     system("cls");
-                    printf("Update function goes here!");
+                    displayAccRecord();
                     break;
                 case 4:
                     system("cls");
@@ -293,6 +315,43 @@ int retrieve(char *username, char *password){
     // If no matching record is found, return 0.
     return 0;
 }
+
+void preserveNewAccData(char *link, char *usern, char *pw){
+
+    PAD *p,*q,*n;
+    p = q = insideFirstAccount;
+
+    n = (PAD*) ((malloc(sizeof(PAD))));
+    strcpy(n->link, link);
+    strcpy(n->username, usern);
+    strcpy(n->pw, pw);
+
+    while(p!=NULL && strcmp(p->username, usern)<0){
+
+        q=p;
+        p=p->next;
+    }
+    if(p== insideFirstAccount)
+        insideFirstAccount=n;
+    else
+        q->next = n;
+    n->next = p;
+}
+
+void displayAccRecord(){
+
+    PAD *p;
+    int i=1;
+    p = insideFirstAccount;
+
+    printf("\n        link                  username      password    \n\n");
+    while(p!=NULL){
+        printf(" %d.) %s     %s       %s\n",i++,p->link, p->username, p->pw);
+        p=p->next;
+    }
+    system("pause");
+}
+
 
 int main() {
     // WRITE CODE HERE
