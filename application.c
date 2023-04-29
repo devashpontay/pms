@@ -19,16 +19,17 @@ int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
 int retrieve(char *username, char *password);
-int operationMenu();
+int operationMenuUI();
+void operationMenu();
 void login()
 {
     Account acc;
 
     printf("\n==================\n");
-    printf("Enter username: \n");
-    scanf("%49s", acc.username);
-    printf("Enter password: \n");
-    scanf("%49s", acc.password);
+    printf("\nEnter username: ");
+    scanf("%30s", acc.username);
+    printf("\nEnter password: ");
+    scanf("%19s", acc.password);
 
     int isValid = retrieve(acc.username, acc.password);
 
@@ -46,7 +47,7 @@ void login()
 }
 
 //Function to call after retrieval
-int operationMenu(){
+int operationMenuUI(){
     system("cls");
     int op;
 
@@ -55,11 +56,44 @@ int operationMenu(){
     printf("2. Add new account\n");
     printf("3. Update existing account\n");
     printf("4. Delete existing account\n");
-    printf("5. Exit\n\n");
+    printf("5. Exit and Save\n\n");
     printf("Enter your choice: ");
     scanf("%d", &op);
 
     return op;
+}
+
+void operationMenu(){
+
+    while(1){
+            switch(operationMenuUI()) {
+                case 1:
+                    system("cls");
+                    printf("Display function goes here!");
+                    break;
+                case 2:
+                    system("cls");
+                    printf("Add account function goes here!");
+                    break;
+                case 3:
+                    system("cls");
+                    printf("Update function goes here!");
+                    break;
+                case 4:
+                    system("cls");
+                    printf("Delete function goes here!");
+                    break;
+                case 5:
+                    printf("Saving then exiting the program...\n");
+                    system("pause");
+                    //printf("Save function goes here ")
+                    exit(0);
+                    break;
+                default:
+                    printf("Invalid choice! Please try again.\n");
+                    break;
+                }
+        }
 }
 
 void saveAccount(){
