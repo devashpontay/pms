@@ -16,24 +16,22 @@ typedef struct Account {
 Account *first_account = NULL; // Initialize a pointer to the first account in the linked list
 
 
-typedef struct InsideAccount {
+typedef struct PreserveAccountData {
     char link[50];
     char username[31];
     char pw[20];
-    struct InsideAccount *next;
-} InsideAccount;
+    struct PreserveAccountData *next;
+} PAD;
 
-InsideAccount *insideFirstAccount = NULL;
+PAD *insideFirstAccount = NULL;
 
 int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
+
 int retrieve(char *username, char *password);
-//int operationMenu();
-void addNewAccount();
-void displayRecord();
-
-
+void preserveNewAccData(char *link, char *usern, char *pw);
+void displayAccRecord();
 int operationMenuUI();
 void operationMenu();
 
@@ -85,15 +83,14 @@ void operationMenu(){
             switch(operationMenuUI()) {
                 case 1:
                     system("cls");
-                    //printf("Add account function goes here!");
-                    printf("WELCOME BITCHESS!! \n\n");
+                    printf("WELCOME TO YOURS TRULY! \n\n");
                     char link[31], username[31], password[31];
                     printf("LINK: ");scanf("%s",link);
                     printf("username: ");scanf("%s", username);
                     printf("password: ");scanf("%s", password);
 
                     system("pause");
-                    addNewAccount(link, username, password);
+                    preserveNewAccData(link, username, password);
                     break;
 
                 case 2:
@@ -102,8 +99,7 @@ void operationMenu(){
                     break;
                 case 3:
                     system("cls");
-                    displayRecord();
-                   //printf("Display function goes here!");
+                    displayAccRecord();
                     break;
                 case 4:
                     system("cls");
@@ -320,15 +316,15 @@ int retrieve(char *username, char *password){
     return 0;
 }
 
-void addNewAccount(char *idNum, char *link, char *usern, char *pw){
+void preserveNewAccData(char *link, char *usern, char *pw){
 
-    InsideAccount *p,*q,*temp;
+    PAD *p,*q,*n;
     p = q = insideFirstAccount;
 
-    temp = (InsideAccount*) ((malloc(sizeof(InsideAccount))));
-    strcpy(temp->link, link);
-    strcpy(temp->username, usern);
-    strcpy(temp->pw, pw);
+    n = (PAD*) ((malloc(sizeof(PAD))));
+    strcpy(n->link, link);
+    strcpy(n->username, usern);
+    strcpy(n->pw, pw);
 
     while(p!=NULL && strcmp(p->username, usern)<0){
 
@@ -336,15 +332,15 @@ void addNewAccount(char *idNum, char *link, char *usern, char *pw){
         p=p->next;
     }
     if(p== insideFirstAccount)
-        insideFirstAccount=temp;
+        insideFirstAccount=n;
     else
-        q->next = temp;
-    temp->next = p;
+        q->next = n;
+    n->next = p;
 }
 
-void displayRecord(){
+void displayAccRecord(){
 
-    InsideAccount *p;
+    PAD *p;
     int i=1;
     p = insideFirstAccount;
 
