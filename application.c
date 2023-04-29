@@ -17,7 +17,6 @@ Account *first_account = NULL; // Initialize a pointer to the first account in t
 
 
 typedef struct InsideAccount {
-
     char link[50];
     char username[31];
     char pw[20];
@@ -30,52 +29,30 @@ int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
 int retrieve(char *username, char *password);
-int operationMenu();
+//int operationMenu();
 void addNewAccount();
 void displayRecord();
+
+
+int operationMenuUI();
+void operationMenu();
 
 void login()
 {
     Account acc;
 
     printf("\n==================\n");
-    printf("Enter username: \n");
-    scanf("%49s", acc.username);
-    printf("Enter password: \n");
-    scanf("%49s", acc.password);
+    printf("\nEnter username: ");
+    scanf("%30s", acc.username);
+    printf("\nEnter password: ");
+    scanf("%19s", acc.password);
 
     int isValid = retrieve(acc.username, acc.password);
 
     if(isValid == 1){
         printf("Successful!\n");
         system("pause");
-         //operationMenu();
-        while(1){
-
-            switch(operationMenu()){
-
-            case 1:
-                   system("cls");
-                   printf("WELCOME BITCHESS!! \n\n");
-                   char link[31], username[31], password[31];
-                   printf("LINK: ");scanf("%s",link);
-                   printf("username: ");scanf("%s", username);
-                   printf("password: ");scanf("%s", password);
-
-                   system("pause");
-                   addNewAccount(link, username, password);
-                   break;
-
-            case 2:
-                    system("cls");
-                    break;
-
-            case 3:
-                   system("cls");
-                   displayRecord();
-                   break;
-            }
-        }
+        operationMenu();
     }
     else{
         printf("Failed!");
@@ -86,7 +63,7 @@ void login()
 }
 
 //Function to call after retrieval
-int operationMenu(){
+int operationMenuUI(){
     system("cls");
     int op;
 
@@ -95,11 +72,54 @@ int operationMenu(){
     printf("2. Update existing accoun\n");
     printf("3. Display accounts\n");
     printf("4. Delete existing account\n");
-    printf("5. Exit\n\n");
+    printf("5. Exit and Save\n\n");
     printf("Enter your choice: ");
     scanf("%d", &op);
 
     return op;
+}
+
+void operationMenu(){
+
+    while(1){
+            switch(operationMenuUI()) {
+                case 1:
+                    system("cls");
+                    //printf("Add account function goes here!");
+                    printf("WELCOME BITCHESS!! \n\n");
+                    char link[31], username[31], password[31];
+                    printf("LINK: ");scanf("%s",link);
+                    printf("username: ");scanf("%s", username);
+                    printf("password: ");scanf("%s", password);
+
+                    system("pause");
+                    addNewAccount(link, username, password);
+                    break;
+
+                case 2:
+                    system("cls");
+                    printf("Update function goes here!");
+                    break;
+                case 3:
+                    system("cls");
+                    displayRecord();
+                   //printf("Display function goes here!");
+                    break;
+                case 4:
+                    system("cls");
+                    printf("Delete function goes here!");
+                    break;
+                case 5:
+                    printf("Saving then exiting the program...\n");
+                    system("pause");
+                    //printf("Save function goes here ")
+                    exit(0);
+                    break;
+                default:
+                    printf("Invalid choice! Please try again.\n");
+                    break;
+                }
+        }
 }
 
 void saveAccount(){
@@ -300,7 +320,7 @@ int retrieve(char *username, char *password){
     return 0;
 }
 
-void addNewAccount(char *link, char *usern, char *pw){
+void addNewAccount(char *idNum, char *link, char *usern, char *pw){
 
     InsideAccount *p,*q,*temp;
     p = q = insideFirstAccount;
@@ -328,7 +348,7 @@ void displayRecord(){
     int i=1;
     p = insideFirstAccount;
 
-    printf("        link                username        password    \n\n");
+    printf("\n        link                  username      password    \n\n");
     while(p!=NULL){
         printf(" %d.) %s     %s       %s\n",i++,p->link, p->username, p->pw);
         p=p->next;
