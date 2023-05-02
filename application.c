@@ -96,11 +96,6 @@ int main() {
 
 }
 
-
-
-
-
-
 void login()
 {
     Account acc;
@@ -166,7 +161,7 @@ void operationMenu(){
                     break;
                 case 3:
                     system("cls");
-                    //display function here
+                    displayAccounts();
                     break;
                 case 4:
                     system("cls");
@@ -186,7 +181,22 @@ void operationMenu(){
         }
 }
 
-void saveAccount(int statCode){
+void displayAccounts() {    //Display the current user's accounts
+    PAD *p = insideFirstAccount;
+
+    printf("\n===== YOUR ACCOUNTS =====\n");
+    printf("ID\tLINK\tUSERNAME\tPASSWORD\n");
+
+    while (p != NULL) {
+        if (strcmp(p->idNum, activeUserId) == 0) {
+            printf("%s\t%s\t%s\t%s\n", p->idNum, p->link, p->username, p->pw);
+        }
+        p = p->next;
+    }
+    getch(); 
+}
+
+void saveAccount(int statCode){ 
     // This function saves all the account records to a file named "accountsDB.txt".
     // It appends new records to the end of the file if it already exists.
 
@@ -210,7 +220,6 @@ void saveAccount(int statCode){
     fclose(fs);
     //printf("Successfully saved all accounts to file.\n");
 }
-
 
 void addAccount() {
     Account *new_account = (Account *) malloc(sizeof(Account)); //create struct and populate its fields
@@ -281,9 +290,7 @@ int loginMenu() {
     return op;
 }
 
-
 void encryption(short int statCode) {
-
 
     if(statCode == 100) {
         Account *p;
@@ -323,7 +330,7 @@ void encryption(short int statCode) {
             }
         }
 
-    }else {
+    } else {
         PAD *p;
         p = insideFirstAccount;
         while(p != NULL) {
@@ -522,10 +529,3 @@ void preserveNewAccData(PAD obj){
         q->next = n;
     n->next = p;
 }
-
-
-
-
-
-
-
