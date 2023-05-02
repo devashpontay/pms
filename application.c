@@ -3,7 +3,7 @@
 #include <conio.h>
 #include <string.h>
 #include <time.h>
-
+//Making some function reusable
 typedef struct Account {
     char idNum[10];
     char fullname[31];
@@ -17,9 +17,11 @@ Account *first_account = NULL; // Initialize a pointer to the first account in t
 
 
 typedef struct PreserveAccountData {
+    char idNum[10];
     char link[50];
     char username[31];
     char pw[20];
+    int key;
     struct PreserveAccountData *next;
 } PAD;
 
@@ -29,11 +31,75 @@ int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
 }
 
+short int userStatCode = 200, singleEncrypt = 100;
+short int listStatCode = 201, multipleEncrypt = 101;
+short int key;
+char activeUserId[10];
+int attempt = 0;
+
+//FUNCTION FORWARD DECLARATION
+
 int retrieve(char *username, char *password);
-void preserveNewAccData(char *link, char *usern, char *pw);
-void displayAccRecord();
+void retrievePreservedAcc();
+void preserveNewAccData(PAD obj);
 int operationMenuUI();
+void encryption(short int statCode);
+void saveAccount(int statCode);
 void operationMenu();
+void saveAccount(int statCode);
+void addAccount();
+int loginMenu();
+Account decryption(Account p);
+PAD decryptionForPAD(PAD p);
+void retrievePreservedAcc();
+void login();
+void preserveNewAccData(PAD obj);
+
+//------------------------------------------------
+//------------------------------------------------
+
+
+int main() {
+    // WRITE CODE HERE
+    // connected to you billona sarap mo
+    // connected ~jerry
+
+    srand(time(NULL));
+    while(1) {
+
+        switch(loginMenu()) {
+            case 1:
+                system("cls");
+                //retrive();
+                login();
+                break;
+            case 2:
+                system("cls");
+                //printf("Create Vault Account function goes here.\n");
+                addAccount();
+                encryption(singleEncrypt);
+                saveAccount(userStatCode);
+                free(first_account);
+                break;
+
+            case 3:
+                printf("Exiting the program...\n");
+                exit(0);
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+                break;
+        }
+    }
+
+    return 0;
+
+}
+
+
+
+
+
 
 void login()
 {
@@ -50,6 +116,7 @@ void login()
     if(isValid == 1){
         printf("Successful!\n");
         system("pause");
+        retrievePreservedAcc();
         operationMenu();
     }
     else{
@@ -78,19 +145,19 @@ int operationMenuUI(){
 }
 
 void operationMenu(){
-
+    PAD obj;
     while(1){
             switch(operationMenuUI()) {
                 case 1:
                     system("cls");
                     printf("WELCOME TO YOURS TRULY! \n\n");
-                    char link[31], username[31], password[31];
-                    printf("LINK: ");scanf("%s",link);
-                    printf("username: ");scanf("%s", username);
-                    printf("password: ");scanf("%s", password);
-
+                    strcpy(obj.idNum, activeUserId);
+                    printf("LINK: ");scanf("%s", obj.link);
+                    printf("username: ");scanf("%s", obj.username);
+                    printf("password: ");scanf("%s", obj.pw);
+                    obj.key = key;
                     system("pause");
-                    preserveNewAccData(link, username, password);
+                    preserveNewAccData(obj);
                     break;
 
                 case 2:
@@ -99,7 +166,7 @@ void operationMenu(){
                     break;
                 case 3:
                     system("cls");
-                    displayAccRecord();
+                    //display function here
                     break;
                 case 4:
                     system("cls");
@@ -108,7 +175,8 @@ void operationMenu(){
                 case 5:
                     printf("Saving then exiting the program...\n");
                     system("pause");
-                    //printf("Save function goes here ")
+                    encryption(multipleEncrypt);
+                    saveAccount(listStatCode);
                     exit(0);
                     break;
                 default:
@@ -118,17 +186,26 @@ void operationMenu(){
         }
 }
 
-void saveAccount(){
+void saveAccount(int statCode){
     // This function saves all the account records to a file named "accountsDB.txt".
     // It appends new records to the end of the file if it already exists.
 
     FILE *fs;
-    fs = fopen("accountsDB.txt", "a"); // open the file in "append" mode to add new records to the end of the file
 
-    Account *p;
-    p = first_account;
-
-    fprintf(fs, "%s@%s@%s@%s@%d\n", p->idNum, p->fullname, p->username, p->password, p->key);
+    if(statCode == 200) {
+        fs = fopen("accountsDB.txt", "a"); // open the file in "append" mode to add new records to the end of the file
+        Account *p;
+        p = first_account;
+        fprintf(fs, "%s@%s@%s@%s@%d\n", p->idNum, p->fullname, p->username, p->password, p->key);
+    }else {
+        fs = fopen("preserveAccDataDB.txt", "w");
+        PAD *p;
+        p = insideFirstAccount;
+        while(p != NULL) {
+            fprintf(fs, "%s@%s@%s@%s@%d\n", p->idNum, p->link, p->username, p->pw, p->key);
+            p = p->next;
+        }
+    }
 
     fclose(fs);
     //printf("Successfully saved all accounts to file.\n");
@@ -140,7 +217,6 @@ void addAccount() {
     char confirm_password[20];
     char ch;
     int i = 0;
-    srand(time(NULL));
     sprintf(new_account->idNum, "%d", genIdNum());
 
     printf("Enter full name: ");
@@ -206,44 +282,86 @@ int loginMenu() {
 }
 
 
-void encryption() {
-    Account *p;
-    p = first_account;
-    srand(time(NULL));
+void encryption(short int statCode) {
 
 
-    for (int i = 0; i < 4; i++) {
-        char *field = NULL;
-        int is_string = 0;
+    if(statCode == 100) {
+        Account *p;
+        p = first_account;
+        for (int i = 0; i < 4; i++) {
+            char *field = NULL;
+            int is_string = 0;
 
-        // Determine which field to encrypt
-        switch (i) {
-            case 0:
-                field = p->idNum;
-                is_string = 1;
-                break;
-            case 1:
-                field = p->fullname;
-                is_string = 1;
-                break;
-            case 2:
-                field = p->username;
-                is_string = 1;
-                break;
-            case 3:
-                field = p->password;
-                is_string = 1;
-                break;
-            default:
-                break;
+            // Determine which field to encrypt
+            switch (i) {
+                case 0:
+                    field = p->idNum;
+                    is_string = 1;
+                    break;
+                case 1:
+                    field = p->fullname;
+                    is_string = 1;
+                    break;
+                case 2:
+                    field = p->username;
+                    is_string = 1;
+                    break;
+                case 3:
+                    field = p->password;
+                    is_string = 1;
+                    break;
+                default:
+                    break;
+            }
+
+            if (is_string) {
+            // encrypt the field
+                for (int j = 0; field[j] != '\0'; j++) {
+                    int ascii_code = (int) field[j];
+                    field[j] = (char) ascii_code + p->key;
+                }
+            }
         }
 
-        if (is_string) {
-            // encrypt the field
-            for (int j = 0; field[j] != '\0'; j++) {
-                int ascii_code = (int) field[j];
-                field[j] = (char) ascii_code + p->key;
+    }else {
+        PAD *p;
+        p = insideFirstAccount;
+        while(p != NULL) {
+            for (int i = 0; i < 4; i++) {
+                char *field = NULL;
+                int is_string = 0;
+
+                // Determine which field to encrypt
+                switch (i) {
+                    case 0:
+                        field = p->idNum;
+                        is_string = 1;
+                        break;
+                    case 1:
+                        field = p->link;
+                        is_string = 1;
+                        break;
+                    case 2:
+                        field = p->username;
+                        is_string = 1;
+                        break;
+                    case 3:
+                        field = p->pw;
+                        is_string = 1;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (is_string) {
+                // encrypt the field
+                    for (int j = 0; field[j] != '\0'; j++) {
+                        int ascii_code = (int) field[j];
+                        field[j] = (char) ascii_code + p->key;
+                    }
+                }
             }
+            p = p->next;
         }
     }
 }
@@ -287,6 +405,45 @@ Account decryption(Account p) {
     return p;
 }
 
+PAD decryptionForPAD(PAD p) {
+
+    for (int i = 0; i < 4; i++) {
+        char *field = NULL;
+        int is_string = 0;
+
+        // Determine which field to decrypt
+        switch (i) {
+            case 0:
+                field = p.idNum;
+                is_string = 1;
+                break;
+            case 1:
+                field = p.link;
+                is_string = 1;
+                break;
+            case 2:
+                field = p.username;
+                is_string = 1;
+                break;
+            case 3:
+                field = p.pw;
+                is_string = 1;
+                break;
+            default:
+                break;
+        }
+
+        if (is_string) {
+            //decrypt the field
+            for (int j = 0; field[j] != '\0'; j++) {
+                int ascii_code = (int) field[j];
+                field[j] = (char) ascii_code - p.key;
+            }
+        }
+    }
+    return p;
+}
+
 int retrieve(char *username, char *password){
 
     // This function retrieves account records from a file and checks if a given username and password match any record.
@@ -295,100 +452,81 @@ int retrieve(char *username, char *password){
     FILE *fs;
 
     fs = fopen("accountsDB.txt", "r");
-     // Loop through the file until the end is reached or a record matching the given username and password is found.
-    while(fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.fullname, obj.username, obj.password, &obj.key)==5){
-      obj =  decryption(obj);
 
-        // If the record matches the given username and password, return 1 and pause the program.
-        if(strcmp(username, obj.username )== 0 && strcmp(password, obj.password)==0){
-            return 1;
-            system("pause");
-        }
+    if(attempt != 2) {
+        // Loop through the file until the end is reached or a record matching the given username and password is found.
+        while(fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.fullname, obj.username, obj.password, &obj.key )== 5){
+            obj =  decryption(obj);
+
+            // If the record matches the given username and password, return 1 and pause the program.
+            if(strcmp(username, obj.username ) == 0 && strcmp(password, obj.password) == 0){
+                strcpy(activeUserId, obj.idNum);
+                key = obj.key;
+                printf("IN RETRIEVE ACC: IDNUM is %s - ACTIVEUSERID is %s", obj.idNum, activeUserId);
+                system("pause");
+                return 1;
+            }
 
         // If the record matches the given username but not the password, print an error message and pause the program.
-        if(strcmp(username, obj.username)==0 && strcmp(password, obj.password) != 0){
-            printf("Wrong password! Please try again...\n");
-            system("pause");
-            login();
+            if(strcmp(username, obj.username)==0 && strcmp(password, obj.password) != 0){
+                printf("Wrong password! Please try again...\n");
+                system("pause");
+                system("cls");
+                attempt++;
+                login();
+            }
         }
+
+    }else {
+        system("cls");
+        printf("Limit for attempt was reached. Try again next time!");
+        system("pause");
+        exit(0);
     }
+
     // If no matching record is found, return 0.
     return 0;
 }
 
-void preserveNewAccData(char *link, char *usern, char *pw){
+void retrievePreservedAcc() {
+    FILE *fs;
+    PAD obj;
+    fs = fopen("preserveAccDataDB.txt", "r");
+
+    while(fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.link, obj.username, obj.pw, &obj.key) == 5) {
+        obj = decryptionForPAD(obj);
+        if(strcmp(obj.idNum, activeUserId) == 0) {
+            preserveNewAccData(obj);
+        }
+    }
+
+}
+
+void preserveNewAccData(PAD obj){
 
     PAD *p,*q,*n;
     p = q = insideFirstAccount;
 
     n = (PAD*) ((malloc(sizeof(PAD))));
-    strcpy(n->link, link);
-    strcpy(n->username, usern);
-    strcpy(n->pw, pw);
+    strcpy(n->idNum, obj.idNum);
+    strcpy(n->link, obj.link);
+    strcpy(n->username, obj.username);
+    strcpy(n->pw, obj.pw);
+    n->key = obj.key;
 
-    while(p!=NULL && strcmp(p->username, usern)<0){
-
-        q=p;
-        p=p->next;
+    while(p != NULL){
+        q = p;
+        p = p->next;
     }
-    if(p== insideFirstAccount)
-        insideFirstAccount=n;
+    if(p == insideFirstAccount)
+        insideFirstAccount = n;
     else
         q->next = n;
     n->next = p;
 }
 
-void displayAccRecord(){
-
-    PAD *p;
-    int i=1;
-    p = insideFirstAccount;
-
-    printf("\n        link                  username      password    \n\n");
-    while(p!=NULL){
-        printf(" %d.) %s     %s       %s\n",i++,p->link, p->username, p->pw);
-        p=p->next;
-    }
-    system("pause");
-}
 
 
-int main() {
-    // WRITE CODE HERE
-    // connected to you billona sarap mo
-    // connected ~jerry
-
-
-    while(1) {
-
-        switch(loginMenu()) {
-            case 1:
-                system("cls");
-                //retrive();
-                login();
-                break;
-            case 2:
-                system("cls");
-                //printf("Create Vault Account function goes here.\n");
-                addAccount();
-                encryption();
-                saveAccount();
-                free(first_account);
-                break;
-
-            case 3:
-                printf("Exiting the program...\n");
-                exit(0);
-                break;
-            default:
-                printf("Invalid choice! Please try again.\n");
-                break;
-        }
-    }
-
-    return 0;
-
-}
 
 
 
