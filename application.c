@@ -104,30 +104,39 @@ int main() {
 
 }
 
-void login()
-{
+void login() {
     Account acc;
+    char ch;
+    int i = 0;
 
     printf("\n==================\n");
     printf("\nEnter username: ");
     scanf("%30s", acc.username);
     printf("\nEnter password: ");
-    scanf("%19s", acc.password);
+    //scanf("%19s", acc.password);
+    while ((ch = getch()) != '\r') {
+        if (i < 19 && isprint(ch)) {
+            acc.password[i++] = ch;
+            printf("*");
+        } else if (i > 0 && ch == '\b') {
+            i--;
+            printf("\b \b");
+        }
+    }
+    acc.password[i] = '\0';
 
     int isValid = retrieve(acc.username, acc.password);
 
     if(isValid == 1){
-        printf("Successful!\n");
+        printf("\n\nSuccessful!\n");
         system("pause");
         retrievePreservedAcc();
         operationMenu();
-    }
-    else{
-        printf("Failed!");
+    } else {
+        printf("\n\nFailed!\n");
         system("pause");
         return;
     }
-
 }
 
 //Function to call after retrieval
