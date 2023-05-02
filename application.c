@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
 //Making some function reusable
 typedef struct Account {
     char idNum[10];
@@ -54,9 +55,16 @@ PAD decryptionForPAD(PAD p);
 void retrievePreservedAcc();
 void login();
 void preserveNewAccData(PAD obj);
+void displayAccounts();
+void updateAccount();
 
 //------------------------------------------------
 //------------------------------------------------
+
+void gotoxy(int x, int y) {
+    COORD coord = {x, y};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 
 
 int main() {
@@ -96,35 +104,39 @@ int main() {
 
 }
 
-
-
-
-
-
-void login()
-{
+void login() {
     Account acc;
+    char ch;
+    int i = 0;
 
     printf("\n==================\n");
     printf("\nEnter username: ");
     scanf("%30s", acc.username);
     printf("\nEnter password: ");
-    scanf("%19s", acc.password);
+    //scanf("%19s", acc.password);
+    while ((ch = getch()) != '\r') {
+        if (i < 19 && isprint(ch)) {
+            acc.password[i++] = ch;
+            printf("*");
+        } else if (i > 0 && ch == '\b') {
+            i--;
+            printf("\b \b");
+        }
+    }
+    acc.password[i] = '\0';
 
     int isValid = retrieve(acc.username, acc.password);
 
     if(isValid == 1){
-        printf("Successful!\n");
+        printf("\n\nSuccessful!\n");
         system("pause");
         retrievePreservedAcc();
         operationMenu();
-    }
-    else{
-        printf("Failed!");
+    } else {
+        printf("\n\nFailed!\n");
         system("pause");
         return;
     }
-
 }
 
 //Function to call after retrieval
@@ -162,11 +174,11 @@ void operationMenu(){
 
                 case 2:
                     system("cls");
-                    printf("Update function goes here!");
+                    updateAccount();
                     break;
                 case 3:
                     system("cls");
-                    //display function here
+                    displayAccounts();
                     break;
                 case 4:
                     system("cls");
@@ -186,7 +198,109 @@ void operationMenu(){
         }
 }
 
-void saveAccount(int statCode){
+void displayAccounts() {    //Display the current user's accounts
+    PAD *p = insideFirstAccount;
+    int num = 0;
+    int row = 7;
+
+    gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
+    gotoxy(7, 5); printf("#");
+    gotoxy(35, 5); printf("LINK");
+    gotoxy(65, 5); printf("USERNAME");
+    gotoxy(100, 5); printf("PASSWORD");
+
+    while (p != NULL) {
+        if (strcmp(p->idNum, activeUserId) == 0) {
+            num++;
+            gotoxy(7, row); printf("%d", num);
+            gotoxy(10, row); printf("|");
+            gotoxy(30, row); printf("%s", p->link);
+            gotoxy(63, row); printf("%s", p->username);
+            gotoxy(98, row); printf("%s", p->pw);
+            row++;
+        }
+        p = p->next;
+    }
+    getch(); 
+}
+
+void updateAccount() {
+    PAD *p = insideFirstAccount;
+    char link[256];
+    char newUsername[256];
+    char newPassword[256];
+    int choice, found = 0, num = 0, row = 7;
+
+    gotoxy(45, 2); printf("===== UPDATE AN ACCOUNT =====");
+    gotoxy(7, 5); printf("#");
+    gotoxy(35, 5); printf("LINK");
+    gotoxy(65, 5); printf("USERNAME");
+    gotoxy(100, 5); printf("PASSWORD");
+
+    while (p != NULL) {
+        num++;
+        gotoxy(7, row); printf("%d", num);
+        gotoxy(10, row); printf("|");
+        gotoxy(30, row); printf("%s", p->link);
+        gotoxy(63, row); printf("%s", p->username);
+        gotoxy(98, row); printf("%s", p->pw);
+        row++;
+        p = p->next;
+    }
+
+    p = insideFirstAccount; // reset p to the beginning of the list
+
+    gotoxy(25, 27);printf("Enter the link of the account you want to update: ");
+    scanf("%s", link);
+
+    while (p != NULL) {
+        if (strcmp(p->idNum, activeUserId) == 0 && strcmp(p->link, link) == 0) {
+            found = 1;
+            break;
+        }
+        p = p->next;
+    }
+
+    if (!found) {
+        gotoxy(52, 16); printf("Link not found.\n");
+        gotoxy(45, 17); system("pause");
+        return;
+    }
+
+    system("cls");
+    gotoxy(5, 3); printf("Updating account:\n");
+    gotoxy(10, 5); printf("Link: %s\n", p->link);
+    gotoxy(10, 6); printf("Username: %s\n", p->username);
+    gotoxy(10, 7); printf("Password: %s\n", p->pw);
+
+    gotoxy(45, 9); printf("What do you want to update?");
+    gotoxy(50, 11); printf("1. Username");
+    gotoxy(50, 12); printf("2. Password");
+    gotoxy(45, 14); printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            gotoxy(42, 18); printf("Enter new username: ");
+            scanf("%s", newUsername);
+            strcpy(p->username, newUsername);
+            break;
+        case 2:
+            gotoxy(43, 18); printf("Enter new password: ");
+            scanf("%s", newPassword);
+            strcpy(p->pw, newPassword);
+            break;
+        default:
+            gotoxy(52, 18); printf("Invalid choice.\n");
+            return;
+    }
+
+    gotoxy(45, 25); printf("Account updated successfully.\n");
+    gotoxy(46, 26); system("pause");
+}
+
+
+void saveAccount(int statCode){ 
     // This function saves all the account records to a file named "accountsDB.txt".
     // It appends new records to the end of the file if it already exists.
 
@@ -210,7 +324,6 @@ void saveAccount(int statCode){
     fclose(fs);
     //printf("Successfully saved all accounts to file.\n");
 }
-
 
 void addAccount() {
     Account *new_account = (Account *) malloc(sizeof(Account)); //create struct and populate its fields
@@ -281,9 +394,7 @@ int loginMenu() {
     return op;
 }
 
-
 void encryption(short int statCode) {
-
 
     if(statCode == 100) {
         Account *p;
@@ -323,7 +434,7 @@ void encryption(short int statCode) {
             }
         }
 
-    }else {
+    } else {
         PAD *p;
         p = insideFirstAccount;
         while(p != NULL) {
@@ -522,10 +633,3 @@ void preserveNewAccData(PAD obj){
         q->next = n;
     n->next = p;
 }
-
-
-
-
-
-
-
