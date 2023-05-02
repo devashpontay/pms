@@ -134,7 +134,7 @@ int operationMenuUI(){
 
     printf("\n===== OPERATION MENU =====\n");
     printf("1. Add new account\n");
-    printf("2. Update existing accoun\n");
+    printf("2. Update existing account\n");
     printf("3. Display accounts\n");
     printf("4. Delete existing account\n");
     printf("5. Exit and Save\n\n");
@@ -462,8 +462,6 @@ int retrieve(char *username, char *password){
             if(strcmp(username, obj.username ) == 0 && strcmp(password, obj.password) == 0){
                 strcpy(activeUserId, obj.idNum);
                 key = obj.key;
-                printf("IN RETRIEVE ACC: IDNUM is %s - ACTIVEUSERID is %s", obj.idNum, activeUserId);
-                system("pause");
                 return 1;
             }
 
