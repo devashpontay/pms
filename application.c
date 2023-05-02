@@ -56,6 +56,7 @@ void retrievePreservedAcc();
 void login();
 void preserveNewAccData(PAD obj);
 void displayAccounts();
+void updateAccount();
 
 //------------------------------------------------
 //------------------------------------------------
@@ -164,7 +165,7 @@ void operationMenu(){
 
                 case 2:
                     system("cls");
-                    printf("Update function goes here!");
+                    updateAccount();
                     break;
                 case 3:
                     system("cls");
@@ -213,6 +214,82 @@ void displayAccounts() {    //Display the current user's accounts
     }
     getch(); 
 }
+
+void updateAccount() {
+    PAD *p = insideFirstAccount;
+    char link[256];
+    char newUsername[256];
+    char newPassword[256];
+    int choice, found = 0, num = 0, row = 7;
+
+    gotoxy(45, 2); printf("===== UPDATE AN ACCOUNT =====");
+    gotoxy(7, 5); printf("#");
+    gotoxy(35, 5); printf("LINK");
+    gotoxy(65, 5); printf("USERNAME");
+    gotoxy(100, 5); printf("PASSWORD");
+
+    while (p != NULL) {
+        num++;
+        gotoxy(7, row); printf("%d", num);
+        gotoxy(10, row); printf("|");
+        gotoxy(30, row); printf("%s", p->link);
+        gotoxy(63, row); printf("%s", p->username);
+        gotoxy(98, row); printf("%s", p->pw);
+        row++;
+        p = p->next;
+    }
+
+    p = insideFirstAccount; // reset p to the beginning of the list
+
+    gotoxy(25, 27);printf("Enter the link of the account you want to update: ");
+    scanf("%s", link);
+
+    while (p != NULL) {
+        if (strcmp(p->idNum, activeUserId) == 0 && strcmp(p->link, link) == 0) {
+            found = 1;
+            break;
+        }
+        p = p->next;
+    }
+
+    if (!found) {
+        gotoxy(52, 16); printf("Link not found.\n");
+        gotoxy(45, 17); system("pause");
+        return;
+    }
+
+    system("cls");
+    gotoxy(5, 3); printf("Updating account:\n");
+    gotoxy(10, 5); printf("Link: %s\n", p->link);
+    gotoxy(10, 6); printf("Username: %s\n", p->username);
+    gotoxy(10, 7); printf("Password: %s\n", p->pw);
+
+    gotoxy(45, 9); printf("What do you want to update?");
+    gotoxy(50, 11); printf("1. Username");
+    gotoxy(50, 12); printf("2. Password");
+    gotoxy(45, 14); printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            gotoxy(42, 18); printf("Enter new username: ");
+            scanf("%s", newUsername);
+            strcpy(p->username, newUsername);
+            break;
+        case 2:
+            gotoxy(43, 18); printf("Enter new password: ");
+            scanf("%s", newPassword);
+            strcpy(p->pw, newPassword);
+            break;
+        default:
+            gotoxy(52, 18); printf("Invalid choice.\n");
+            return;
+    }
+
+    gotoxy(45, 25); printf("Account updated successfully.\n");
+    gotoxy(46, 26); system("pause");
+}
+
 
 void saveAccount(int statCode){ 
     // This function saves all the account records to a file named "accountsDB.txt".
