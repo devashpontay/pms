@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
 //Making some function reusable
 typedef struct Account {
     char idNum[10];
@@ -54,9 +55,15 @@ PAD decryptionForPAD(PAD p);
 void retrievePreservedAcc();
 void login();
 void preserveNewAccData(PAD obj);
+void displayAccounts();
 
 //------------------------------------------------
 //------------------------------------------------
+
+void gotoxy(int x, int y) {
+    COORD coord = {x, y};
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 
 
 int main() {
@@ -183,13 +190,24 @@ void operationMenu(){
 
 void displayAccounts() {    //Display the current user's accounts
     PAD *p = insideFirstAccount;
+    int num = 0;
+    int row = 7;
 
-    printf("\n===== YOUR ACCOUNTS =====\n");
-    printf("ID\tLINK\tUSERNAME\tPASSWORD\n");
+    gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
+    gotoxy(7, 5); printf("#");
+    gotoxy(35, 5); printf("LINK");
+    gotoxy(65, 5); printf("USERNAME");
+    gotoxy(100, 5); printf("PASSWORD");
 
     while (p != NULL) {
         if (strcmp(p->idNum, activeUserId) == 0) {
-            printf("%s\t%s\t%s\t%s\n", p->idNum, p->link, p->username, p->pw);
+            num++;
+            gotoxy(7, row); printf("%d", num);
+            gotoxy(10, row); printf("|");
+            gotoxy(30, row); printf("%s", p->link);
+            gotoxy(63, row); printf("%s", p->username);
+            gotoxy(98, row); printf("%s", p->pw);
+            row++;
         }
         p = p->next;
     }
