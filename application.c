@@ -4,7 +4,6 @@
 #include <string.h>
 #include <time.h>
 #include <windows.h>
-#include <ctype.h>
 //Making some function reusable
 typedef struct Account {
     char idNum[10];
@@ -28,7 +27,6 @@ typedef struct PreserveAccountData {
 } PAD;
 
 PAD *insideFirstAccount = NULL;
-int row =7;
 
 int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
@@ -59,7 +57,7 @@ void login();
 void preserveNewAccData(PAD obj);
 void displayAccounts();
 void updateAccount();
-void deleteAccount();
+
 //------------------------------------------------
 //------------------------------------------------
 
@@ -160,7 +158,6 @@ int operationMenuUI(){
 
 void operationMenu(){
     PAD obj;
-    int op;
     while(1){
             switch(operationMenuUI()) {
                 case 1:
@@ -174,6 +171,7 @@ void operationMenu(){
                     system("pause");
                     preserveNewAccData(obj);
                     break;
+
                 case 2:
                     system("cls");
                     updateAccount();
@@ -184,7 +182,7 @@ void operationMenu(){
                     break;
                 case 4:
                     system("cls");
-                    deleteAccount();
+                    printf("Delete function goes here!");
                     break;
                 case 5:
                     printf("Saving then exiting the program...\n");
@@ -200,87 +198,10 @@ void operationMenu(){
         }
 }
 
-
-void deleteAccount()
-{
-    PAD *p = insideFirstAccount;
-    PAD *prev = NULL;
-    char link[256];
-    int num = 0, row = 7;
-    char op;
-
-    gotoxy(45, 2); printf("===== DELETE AN ACCOUNT =====");
-    gotoxy(7, 5); printf("#");
-    gotoxy(35, 5); printf("LINK");
-    gotoxy(65, 5); printf("USERNAME");
-    gotoxy(100, 5); printf("PASSWORD");
-
-    while (p != NULL)
-        {
-        num++;
-        gotoxy(7, row); printf("%d", num);
-        gotoxy(10, row); printf("|");
-        gotoxy(30, row); printf("%s", p->link);
-        gotoxy(63, row); printf("%s", p->username);
-        gotoxy(98, row); printf("%s", p->pw);
-        row++;
-        p = p->next;
-        }
-
-    p = insideFirstAccount;
-
-
-    gotoxy(25, 27);printf("Enter the link of the account you want to delete: ");
-    scanf("%s", link);
-
-    if (p != NULL && strcmp(p->idNum, activeUserId) == 0 && strcmp(p->link, link) == 0)
-        {
-        insideFirstAccount = p->next;  // Change head
-        free(p);              // Free old head
-        return;
-        }
-    //traverse the list while keeping check of previous node until we found the node to be deleted
-    while (p != NULL && strcmp(p->idNum, activeUserId) != 0 && strcmp(p->link, link) != 0)
-        {
-        prev = p;
-        p = p->next;
-        }
-
-    if (p == NULL)
-        {
-        gotoxy(52, 16); printf("Link not found.\n");
-        gotoxy(45, 17); system("pause");
-        return;
-        }
-
-    system("cls");
-    gotoxy(7, 3); printf("Do you wish to proceed to the deletion?(Y/N) ");
-    scanf("%c", op);
-    if(op == 'y' || op == 'Y')
-        {
-        prev->next = p->next;
-        free(p);
-        gotoxy(7, 8); printf("Account deleted successfully.\n");
-        gotoxy(7, 10); system("pause");
-        }
-    else if( op == 'n' || op == 'N')
-        {
-        gotoxy(7, 8); printf("Account deletion aborted.\n");
-        gotoxy(7, 10); system("pause");
-        return;
-        }
-    else
-        {
-        gotoxy(7, 8); printf("Invalid Input, returning.\n");
-        gotoxy(7, 10); system("pause");
-        return;
-        }
-}
-
 void displayAccounts() {    //Display the current user's accounts
     PAD *p = insideFirstAccount;
     int num = 0;
-    row = 7;
+    int row = 7;
 
     gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
     gotoxy(7, 5); printf("#");
@@ -300,7 +221,7 @@ void displayAccounts() {    //Display the current user's accounts
         }
         p = p->next;
     }
-    getch();
+    getch(); 
 }
 
 void updateAccount() {
@@ -379,7 +300,7 @@ void updateAccount() {
 }
 
 
-void saveAccount(int statCode){
+void saveAccount(int statCode){ 
     // This function saves all the account records to a file named "accountsDB.txt".
     // It appends new records to the end of the file if it already exists.
 
@@ -685,7 +606,6 @@ void retrievePreservedAcc() {
         obj = decryptionForPAD(obj);
         if(strcmp(obj.idNum, activeUserId) == 0) {
             preserveNewAccData(obj);
-
         }
     }
 
