@@ -230,7 +230,7 @@ void updateAccount() {
     char link[256];
     char newUsername[256];
     char newPassword[256];
-    int choice, found = 0, num = 0, row = 7;
+    int choice, found = 0, num = 0, row = 7, row_matchingAcc = 8;
 
     gotoxy(45, 2); printf("===== UPDATE AN ACCOUNT =====");
     gotoxy(7, 5); printf("#");
@@ -251,21 +251,52 @@ void updateAccount() {
 
     p = insideFirstAccount; // reset p to the beginning of the list
 
-    gotoxy(25, 27);printf("Enter the link of the account you want to update: ");
+    gotoxy(25, 27); printf("Enter the link of the account you want to update: ");
     scanf("%s", link);
+
+    // find all accounts with the same link
+    PAD *matchingAccounts[256];
+    int numMatchingAccounts = 0;
 
     while (p != NULL) {
         if (strcmp(p->idNum, activeUserId) == 0 && strcmp(p->link, link) == 0) {
-            found = 1;
-            break;
+            matchingAccounts[numMatchingAccounts++] = p;
         }
         p = p->next;
     }
 
-    if (!found) {
+    if (numMatchingAccounts == 0) {
         gotoxy(52, 16); printf("Link not found.\n");
         gotoxy(45, 17); system("pause");
         return;
+    }
+
+    if (numMatchingAccounts == 1) {
+        p = matchingAccounts[0];
+    } else {
+        // prompt the user to choose which account to update
+        system("cls");
+        gotoxy(38, 6); printf("Multiple accounts found with the same link.");
+        for (int i = 0; i < numMatchingAccounts; i++) {
+            gotoxy(50, row_matchingAcc + i + 1); printf("%d. %s\n", i + 1, matchingAccounts[i]->username);
+        }
+        gotoxy(30, row_matchingAcc + numMatchingAccounts + 2); printf("Enter the username of the account you want to update: ");
+        scanf("%s", newUsername);
+
+        // find the account with the entered username
+        for (int i = 0; i < numMatchingAccounts; i++) {
+            if (strcmp(matchingAccounts[i]->username, newUsername) == 0) {
+                p = matchingAccounts[i];
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            gotoxy(52, 16); printf("Account not found.\n");
+            gotoxy(45, 17); system("pause");
+            return;
+        }
     }
 
     system("cls");
@@ -299,7 +330,6 @@ void updateAccount() {
     gotoxy(45, 25); printf("Account updated successfully.\n");
     gotoxy(46, 26); system("pause");
 }
-
 
 void saveAccount(int statCode){
     // This function saves all the account records to a file named "accountsDB.txt".
