@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <windows.h>
+#include <ctype.h>
 //Making some function reusable
 typedef struct Account {
     char idNum[10];
@@ -221,7 +222,7 @@ void displayAccounts() {    //Display the current user's accounts
         }
         p = p->next;
     }
-    getch(); 
+    getch();
 }
 
 void updateAccount() {
@@ -329,7 +330,7 @@ void updateAccount() {
     gotoxy(46, 26); system("pause");
 }
 
-void saveAccount(int statCode){ 
+void saveAccount(int statCode){
 
     // This function saves all the account records to a file named "accountsDB.txt".
     // It appends new records to the end of the file if it already exists.
