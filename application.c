@@ -231,6 +231,9 @@ void updateAccount() {
     char newUsername[256];
     char newPassword[256];
     int choice, found = 0, num = 0, row = 7, row_matchingAcc = 8;
+    // find all accounts with the same link
+    PAD *matchingAccounts[256];
+    int numMatchingAccounts = 0;
 
     gotoxy(45, 2); printf("===== UPDATE AN ACCOUNT =====");
     gotoxy(7, 5); printf("#");
@@ -253,10 +256,6 @@ void updateAccount() {
 
     gotoxy(25, 27); printf("Enter the link of the account you want to update: ");
     scanf("%s", link);
-
-    // find all accounts with the same link
-    PAD *matchingAccounts[256];
-    int numMatchingAccounts = 0;
 
     while (p != NULL) {
         if (strcmp(p->idNum, activeUserId) == 0 && strcmp(p->link, link) == 0) {
