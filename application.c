@@ -58,6 +58,10 @@ void login();
 void preserveNewAccData(PAD obj);
 void displayAccounts();
 void updateAccount();
+void deleteNode();
+void displayAndDelete();
+//void deleteAccount();
+//int deleteConfirmation();
 
 //------------------------------------------------
 //------------------------------------------------
@@ -183,7 +187,7 @@ void operationMenu(){
                     break;
                 case 4:
                     system("cls");
-                    printf("Delete function goes here!");
+                    displayAndDelete();
                     break;
                 case 5:
                     printf("Saving then exiting the program...\n");
@@ -199,7 +203,74 @@ void operationMenu(){
         }
 }
 
+
 void displayAccounts() {    //Display the current user's accounts
+    PAD *p = insideFirstAccount;
+    int num = 0;
+    row = 7;
+
+    gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
+    gotoxy(7, 5); printf("#");
+    gotoxy(35, 5); printf("LINK");
+    gotoxy(65, 5); printf("USERNAME");
+    gotoxy(100, 5); printf("PASSWORD");
+
+    while (p != NULL) {
+        if (strcmp(p->idNum, activeUserId) == 0) {
+            num++;
+            gotoxy(7, row); printf("%d", num);
+            gotoxy(10, row); printf("|");
+            gotoxy(30, row); printf("%s", p->link);
+            gotoxy(63, row); printf("%s", p->username);
+            gotoxy(98, row); printf("%s", p->pw);
+            row++;
+        }
+        p = p->next;
+    }
+    getch();
+}
+
+void deleteNode() {
+    int position;
+    row = row +2;
+    gotoxy(35, row);printf("Enter the column number of the account you want to delete: ");
+    scanf("%d", &position);
+
+    if (insideFirstAccount == NULL)
+        return;
+
+    if (position == 1) {
+        PAD *temp = insideFirstAccount;
+        insideFirstAccount = insideFirstAccount->next;
+        free(temp);
+        return;
+    }
+
+    PAD *prev = insideFirstAccount;
+    for (int i = 1; i < position - 1; i++) {
+        if (prev->next == NULL)
+            return;
+        prev = prev->next;
+    }
+
+    if (prev->next == NULL)
+        return;
+
+    PAD *temp = prev->next;
+    prev->next = temp->next;
+    free(temp);
+    system("cls");
+    gotoxy(30, 8);printf("Account deleted successfully");
+    gotoxy(30, 10);system("pause");
+}
+
+void displayAndDelete() {
+    if (insideFirstAccount == NULL) {
+        system("cls");
+        printf("Linked list is empty.\n");
+        return;
+    }
+    
     PAD *p = insideFirstAccount;
     int num = 0;
     int row = 7;
@@ -222,8 +293,10 @@ void displayAccounts() {    //Display the current user's accounts
         }
         p = p->next;
     }
-    getch();
+    printf("\n");
+    deleteNode();
 }
+
 
 void updateAccount() {
     PAD *p = insideFirstAccount;
