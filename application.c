@@ -28,6 +28,7 @@ typedef struct PreserveAccountData {
 } PAD;
 
 PAD *insideFirstAccount = NULL;
+int row;
 
 int genIdNum() {
     return (rand() % 9999) + 1;  // generate a random number between 1 and 9999
@@ -58,6 +59,8 @@ void login();
 void preserveNewAccData(PAD obj);
 void displayAccounts();
 void updateAccount();
+void deleteNode();
+void displayAndDelete();
 
 //------------------------------------------------
 //------------------------------------------------
@@ -183,7 +186,7 @@ void operationMenu(){
                     break;
                 case 4:
                     system("cls");
-                    printf("Delete function goes here!");
+                    displayAndDelete();
                     break;
                 case 5:
                     printf("Saving then exiting the program...\n");
@@ -202,7 +205,7 @@ void operationMenu(){
 void displayAccounts() {    //Display the current user's accounts
     PAD *p = insideFirstAccount;
     int num = 0;
-    int row = 7;
+    row = 7;
 
     gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
     gotoxy(7, 5); printf("#");
@@ -225,12 +228,92 @@ void displayAccounts() {    //Display the current user's accounts
     getch();
 }
 
+void deleteNode() {
+    int position;
+    row = 14;
+    gotoxy(35, row);printf("Enter the row number of the account you want to delete: ");
+    scanf("%d", &position);
+
+    if (position == 1) {
+        PAD *temp = insideFirstAccount;
+        insideFirstAccount = insideFirstAccount->next;
+        free(temp);
+        system("cls");
+        gotoxy(30, 8);printf("Account deleted successfully");
+        gotoxy(30, 10);system("pause");
+        return;
+    }
+
+    PAD *prev = insideFirstAccount;
+    for (int i = 1; i < position - 1; i++) {
+        if(prev->next == NULL){
+            system("cls");
+            gotoxy(30, 8);printf("Invalid request! Row %d is not in the list.", position);
+            gotoxy(30, 10);system("pause");
+            return;
+        }
+        prev = prev->next;
+    }
+
+    if (prev->next == NULL) {
+        system("cls");
+        gotoxy(30, 8);printf("Invalid request! Row %d is not in the list.", position);
+        gotoxy(30, 10);system("pause");
+        return;
+    };
+
+    PAD *temp = prev->next;
+    prev->next = temp->next;
+    free(temp);
+    system("cls");
+    gotoxy(30, 8);printf("Account deleted successfully");
+    gotoxy(30, 10);system("pause");
+    return;
+}
+
+void displayAndDelete() {
+    if (insideFirstAccount == NULL) {
+        system("cls");
+        gotoxy(30, 8);printf("The list is empty!");
+        gotoxy(30, 10);system("pause");
+        return;
+    }
+
+    PAD *p = insideFirstAccount;
+    int num = 0;
+    row = 7;
+
+    gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
+    gotoxy(7, 5); printf("#");
+    gotoxy(35, 5); printf("LINK");
+    gotoxy(65, 5); printf("USERNAME");
+    gotoxy(100, 5); printf("PASSWORD");
+
+    while (p != NULL) {
+        if (strcmp(p->idNum, activeUserId) == 0) {
+            num++;
+            gotoxy(7, row); printf("%d", num);
+            gotoxy(10, row); printf("|");
+            gotoxy(30, row); printf("%s", p->link);
+            gotoxy(63, row); printf("%s", p->username);
+            gotoxy(98, row); printf("%s", p->pw);
+            row++;
+        }
+        p = p->next;
+    }
+    printf("\n");
+    deleteNode();
+}
+
 void updateAccount() {
     PAD *p = insideFirstAccount;
     char link[256];
     char newUsername[256];
     char newPassword[256];
-    int choice, found = 0, num = 0, row = 7;
+    int choice, found = 0, num = 0, row = 7, row_matchingAcc = 8;
+    // find all accounts with the same link
+    PAD *matchingAccounts[256];
+    int numMatchingAccounts = 0;
 
     gotoxy(45, 2); printf("===== UPDATE AN ACCOUNT =====");
     gotoxy(7, 5); printf("#");
@@ -251,21 +334,48 @@ void updateAccount() {
 
     p = insideFirstAccount; // reset p to the beginning of the list
 
-    gotoxy(25, 27);printf("Enter the link of the account you want to update: ");
+    gotoxy(25, 27); printf("Enter the link of the account you want to update: ");
     scanf("%s", link);
 
     while (p != NULL) {
         if (strcmp(p->idNum, activeUserId) == 0 && strcmp(p->link, link) == 0) {
-            found = 1;
-            break;
+            matchingAccounts[numMatchingAccounts++] = p;
         }
         p = p->next;
     }
 
-    if (!found) {
+    if (numMatchingAccounts == 0) {
         gotoxy(52, 16); printf("Link not found.\n");
         gotoxy(45, 17); system("pause");
         return;
+    }
+
+    if (numMatchingAccounts == 1) {
+        p = matchingAccounts[0];
+    } else {
+        // prompt the user to choose which account to update
+        system("cls");
+        gotoxy(38, 6); printf("Multiple accounts found with the same link.");
+        for (int i = 0; i < numMatchingAccounts; i++) {
+            gotoxy(50, row_matchingAcc + i + 1); printf("%d. %s\n", i + 1, matchingAccounts[i]->username);
+        }
+        gotoxy(30, row_matchingAcc + numMatchingAccounts + 2); printf("Enter the username of the account you want to update: ");
+        scanf("%s", newUsername);
+
+        // find the account with the entered username
+        for (int i = 0; i < numMatchingAccounts; i++) {
+            if (strcmp(matchingAccounts[i]->username, newUsername) == 0) {
+                p = matchingAccounts[i];
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            gotoxy(52, 16); printf("Account not found.\n");
+            gotoxy(45, 17); system("pause");
+            return;
+        }
     }
 
     system("cls");
@@ -300,8 +410,8 @@ void updateAccount() {
     gotoxy(46, 26); system("pause");
 }
 
-
 void saveAccount(int statCode){
+
     // This function saves all the account records to a file named "accountsDB.txt".
     // It appends new records to the end of the file if it already exists.
 
