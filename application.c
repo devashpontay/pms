@@ -50,7 +50,7 @@ void encryption(short int statCode);
 void saveAccount(int statCode);
 void operationMenu();
 void saveAccount(int statCode);
-void addAccount();
+int addAccount();
 int loginMenu();
 Account decryption(Account p);
 PAD decryptionForPAD(PAD p);
@@ -88,7 +88,7 @@ int main() {
             case 2:
                 system("cls");
                 //printf("Create Vault Account function goes here.\n");
-                addAccount();
+                if(addAccount() == 1)break;
                 encryption(singleEncrypt);
                 saveAccount(userStatCode);
                 free(first_account);
@@ -112,11 +112,16 @@ void login() {
     Account acc;
     char ch;
     int i = 0;
+    int higa =196;
 
-    printf("\n==================\n");
-    printf("\nEnter username: ");
-    scanf("%30s", acc.username);
-    printf("\nEnter password: ");
+      gotoxy(40,4);printf("[< ------ L O G I N  P A G E ------- >]");
+
+    for (int i = 20; i <= 99; i++) {
+         gotoxy(i, 26);printf("%c", (char)higa);
+         }
+     gotoxy(45,9);printf("Enter username: ");
+     scanf("%30s", acc.username);
+     gotoxy(45,10);printf("Enter password: ");
     //scanf("%19s", acc.password);
     while ((ch = getch()) != '\r') {
         if (i < 19 && isprint(ch)) {
@@ -129,16 +134,19 @@ void login() {
     }
     acc.password[i] = '\0';
 
+
+
     int isValid = retrieve(acc.username, acc.password);
 
     if(isValid == 1){
-        printf("\n\nSuccessful!\n");
-        system("pause");
+    gotoxy(48, 25); printf("Successful login!");
+
+        system("pause>0");
         retrievePreservedAcc();
         operationMenu();
     } else {
-        printf("\n\nFailed!\n");
-        system("pause");
+         gotoxy(43, 25);printf("Failed! Please try again...");
+        system("pause>0");
         return;
     }
 }
@@ -148,13 +156,24 @@ int operationMenuUI(){
     system("cls");
     int op;
 
-    printf("\n===== OPERATION MENU =====\n");
-    printf("1. Add new account\n");
-    printf("2. Update existing account\n");
-    printf("3. Display accounts\n");
-    printf("4. Delete existing account\n");
-    printf("5. Exit and Save\n\n");
-    printf("Enter your choice: ");
+    gotoxy(35,6);printf("                  |\\__/,|   (`\\");
+    gotoxy(35,7);printf("                _.|o o  |_   ) )");
+    gotoxy(61,8);printf("(((");
+    gotoxy(48,8);printf("(((");
+
+    gotoxy(33,8);printf("---------------");
+    gotoxy(51,8);printf("----------");
+    gotoxy(64,8);printf("---------------");
+    gotoxy(33,9);printf("|      O P E R A T I O N A L   M E N U       |");
+    gotoxy(33,10);printf("----------------------------------------------");
+
+
+    gotoxy(46,12);printf("1. Add new account");
+    gotoxy(46,13);printf("2. Update existing account");
+    gotoxy(46,14);printf("3. Display accounts");
+    gotoxy(46,15);printf("4. Delete existing account");
+    gotoxy(46,16);printf("5. Exit and Save");
+    gotoxy(46,18);printf("Enter your choice(1-5): ");
     scanf("%d", &op);
 
     return op;
@@ -166,13 +185,13 @@ void operationMenu(){
             switch(operationMenuUI()) {
                 case 1:
                     system("cls");
-                    printf("WELCOME TO YOURS TRULY! \n\n");
+                    gotoxy(42,5);printf("[<------- W E L C O M E ------->]");
                     strcpy(obj.idNum, activeUserId);
-                    printf("LINK: ");scanf("%s", obj.link);
-                    printf("username: ");scanf("%s", obj.username);
-                    printf("password: ");scanf("%s", obj.pw);
+                    gotoxy(44,8);printf("Link: ");scanf("%s", obj.link);
+                    gotoxy(44,9);printf("Username: ");scanf("%s", obj.username);
+                    gotoxy(44,10);printf("password: ");scanf("%s", obj.pw);
                     obj.key = key;
-                    system("pause");
+                    gotoxy(44,12);system("pause");
                     preserveNewAccData(obj);
                     break;
 
@@ -231,7 +250,7 @@ void displayAccounts() {    //Display the current user's accounts
 void deleteNode() {
     int position;
     row = 14;
-    gotoxy(35, row);printf("Enter the row number of the account you want to delete: ");
+    gotoxy(32, 28);printf("Enter the row number of the account you want to delete: ");
     scanf("%d", &position);
 
     if (position == 1) {
@@ -266,8 +285,8 @@ void deleteNode() {
     prev->next = temp->next;
     free(temp);
     system("cls");
-    gotoxy(30, 8);printf("Account deleted successfully");
-    gotoxy(30, 10);system("pause");
+    gotoxy(50, 11);printf("Account deleted successfully");
+    gotoxy(35, 10);system("pause");
     return;
 }
 
@@ -436,20 +455,22 @@ void saveAccount(int statCode){
     //printf("Successfully saved all accounts to file.\n");
 }
 
-void addAccount() {
+int addAccount() {
     Account *new_account = (Account *) malloc(sizeof(Account)); //create struct and populate its fields
     char confirm_password[20];
     char ch;
     int i = 0;
     sprintf(new_account->idNum, "%d", genIdNum());
 
-    printf("Enter full name: ");
+     gotoxy(35,5);printf("[< ----- C R E A T E  A C C O U N T ----- >]");
+
+    gotoxy(44,8);printf("Enter fullname: ");
     scanf(" %[^\n]", new_account->fullname);
 
-    printf("Enter username: ");
+    gotoxy(44,9);printf("Enter username: ");
     scanf("%s", new_account->username);
 
-    printf("Enter password: ");
+    gotoxy(44,10);printf("Enter password: ");
     while ((ch = getch()) != '\r') {
         if (i < 20 && ch != '\b') {
             new_account->password[i++] = ch;
@@ -460,8 +481,12 @@ void addAccount() {
         }
     }
     new_account->password[i] = '\0';
+    int higa =196;
+    for (int i = 20; i <= 99; i++) {
+         gotoxy(i, 26);printf("%c", (char)higa);
+    }
 
-    printf("\nConfirm password: ");
+    gotoxy(44,12);printf("Confirm password: ");
     i = 0;
     while ((ch = getch()) != '\r') {
         if (i < 20 && ch != '\b') {
@@ -475,10 +500,10 @@ void addAccount() {
     confirm_password[i] = '\0';
 
     if (strcmp(new_account->password, confirm_password) != 0) {
-        printf("\nPasswords do not match. Account not created.\n");
-        system("pause");
+        gotoxy(37,25);printf("Passwords do not match. Account not created.");
+        gotoxy(38,27);system("pause");
         free(new_account);
-        return;
+        return 1;
     }
 
     new_account->key = rand() % 56 + 1;
@@ -487,19 +512,22 @@ void addAccount() {
 
     first_account = new_account; // first account pointer to the new account
 
-    printf("\n\nAccount added successfully!\n");
-    system("pause");
+    gotoxy(44,25);printf("Account added successfully!");
+    gotoxy(44,27);system("pause");
 }
 
 int loginMenu() {
     system("cls");
     int op;
 
-    printf("\n===== MENU =====\n");
-    printf("1. Log in\n");
-    printf("2. Create Vault Account\n");
-    printf("3. Exit\n\n");
-    printf("Enter your choice: ");
+    gotoxy(43,5); printf(" __  __  ____  _  _  __  __ /\\ ");
+    gotoxy(43,6); printf("(  \\/  )( ___)( \\( )(  )(  ))( ");
+    gotoxy(43,7); printf(" )    (  )__)  )  (  )(__)( \\/ ");
+    gotoxy(43,8); printf("(_/\\/\\_)(____)(_)\\_)(______)() ");
+    gotoxy(46,10);printf("1. Log in\n");
+    gotoxy(46,11);printf("2. Create vault \n");
+    gotoxy(46,12);printf("3. Exit\n\n");
+    gotoxy(46,14);printf("Enter your choice(1-3): ");
     scanf("%d", &op);
 
     return op;
@@ -672,6 +700,7 @@ int retrieve(char *username, char *password){
 
     Account obj;
     FILE *fs;
+    int higa = 196;
 
     fs = fopen("accountsDB.txt", "r");
 
@@ -689,8 +718,8 @@ int retrieve(char *username, char *password){
 
         // If the record matches the given username but not the password, print an error message and pause the program.
             if(strcmp(username, obj.username)==0 && strcmp(password, obj.password) != 0){
-                printf("Wrong password! Please try again...\n");
-                system("pause");
+                gotoxy(48, 25);printf("Wrong password!");
+                system("pause>0");
                 system("cls");
                 attempt++;
                 login();
@@ -698,9 +727,10 @@ int retrieve(char *username, char *password){
         }
 
     }else {
+        //system("cls");
+         gotoxy(33, 25);printf("Limit for attempt was reached. Try again next time!");
+        system("pause>0");
         system("cls");
-        printf("Limit for attempt was reached. Try again next time!");
-        system("pause");
         exit(0);
     }
 
