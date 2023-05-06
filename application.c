@@ -188,7 +188,7 @@ void operationMenu(){
                     gotoxy(42,5);printf("[<------- W E L C O M E ------->]");
                     strcpy(obj.idNum, activeUserId);
                     gotoxy(44,8);printf("Link: ");scanf("%s", obj.link);
-                    gotoxy(44,9);printf("Username: ");scanf("%s", obj.username);
+                    gotoxy(44,9);printf("username: ");scanf("%s", obj.username);
                     gotoxy(44,10);printf("password: ");scanf("%s", obj.pw);
                     obj.key = key;
                     gotoxy(44,12);system("pause");
@@ -208,8 +208,9 @@ void operationMenu(){
                     displayAndDelete();
                     break;
                 case 5:
-                    printf("Saving then exiting the program...\n");
-                    system("pause");
+                    gotoxy(86,27);printf("Saving then exiting the program.");
+                    gotoxy(86,28);system("pause");
+                    system("cls");
                     encryption(multipleEncrypt);
                     saveAccount(listStatCode);
                     exit(0);
