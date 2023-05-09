@@ -5,6 +5,7 @@
 #include <time.h>
 #include <windows.h>
 #include <ctype.h>
+
 //Making some function reusable
 typedef struct Account {
     char idNum[10];
@@ -70,6 +71,12 @@ void gotoxy(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
+void color(int color) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color); //update
+}
+
+HANDLE hColor;
+COORD CursorPosition;
 
 int main() {
     // WRITE CODE HERE
@@ -113,16 +120,27 @@ void login() {
     char ch;
     int i = 0;
     int higa =196;
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
 
-      gotoxy(40,4);printf("[< ------ L O G I N  P A G E ------- >]");
-
+      SetConsoleTextAttribute(hColor, 1);
+      gotoxy(40,4);printf("[< ------");
+      gotoxy(71,4);printf("------- >]");
+      //SetConsoleTextAttribute(hColor, 233);
+      SetConsoleTextAttribute(hColor, 113);
+      gotoxy(51,4);printf(" L O G I N  P A G E ");
+   SetConsoleTextAttribute(hColor, 8);
     for (int i = 20; i <= 99; i++) {
          gotoxy(i, 26);printf("%c", (char)higa);
          }
+
+     SetConsoleTextAttribute(hColor, 8);
      gotoxy(45,9);printf("Enter username: ");
+     SetConsoleTextAttribute(hColor, 10);
      scanf("%30s", acc.username);
+     SetConsoleTextAttribute(hColor, 8);
      gotoxy(45,10);printf("Enter password: ");
     //scanf("%19s", acc.password);
+    SetConsoleTextAttribute(hColor, 10);
     while ((ch = getch()) != '\r') {
         if (i < 19 && isprint(ch)) {
             acc.password[i++] = ch;
@@ -139,13 +157,16 @@ void login() {
     int isValid = retrieve(acc.username, acc.password);
 
     if(isValid == 1){
+    SetConsoleTextAttribute(hColor, 279);
     gotoxy(48, 25); printf("Successful login!");
-
+    SetConsoleTextAttribute(hColor, 8);
         system("pause>0");
         retrievePreservedAcc();
         operationMenu();
     } else {
+         SetConsoleTextAttribute(hColor, 192);
          gotoxy(43, 25);printf("Failed! Please try again...");
+         SetConsoleTextAttribute(hColor, 8);
         system("pause>0");
         return;
     }
@@ -155,6 +176,8 @@ void login() {
 int operationMenuUI(){
     system("cls");
     int op;
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hColor, 3);
 
     gotoxy(35,6);printf("                  |\\__/,|   (`\\");
     gotoxy(35,7);printf("                _.|o o  |_   ) )");
@@ -164,16 +187,21 @@ int operationMenuUI(){
     gotoxy(33,8);printf("---------------");
     gotoxy(51,8);printf("----------");
     gotoxy(64,8);printf("---------------");
-    gotoxy(33,9);printf("|      O P E R A T I O N A L   M E N U       |");
+    gotoxy(33,9);printf("|");
+    gotoxy(78,9);printf("|");
     gotoxy(33,10);printf("----------------------------------------------");
 
+    SetConsoleTextAttribute(hColor, 128);
+    gotoxy(39,9);printf(" O P E R A T I O N A L   M E N U ");
 
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(46,12);printf("1. Add new account");
     gotoxy(46,13);printf("2. Update existing account");
     gotoxy(46,14);printf("3. Display accounts");
     gotoxy(46,15);printf("4. Delete existing account");
     gotoxy(46,16);printf("5. Exit and Save");
     gotoxy(46,18);printf("Enter your choice(1-5): ");
+    SetConsoleTextAttribute(hColor, 10);
     scanf("%d", &op);
 
     return op;
@@ -181,16 +209,31 @@ int operationMenuUI(){
 
 void operationMenu(){
     PAD obj;
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
     while(1){
             switch(operationMenuUI()) {
                 case 1:
                     system("cls");
-                    gotoxy(42,5);printf("[<------- W E L C O M E ------->]");
+                    SetConsoleTextAttribute(hColor, 14);
+                    gotoxy(42,5);printf("[<-------");
+                    gotoxy(69,5);printf("------->]");
+                    SetConsoleTextAttribute(hColor, 192);
+                    gotoxy(53,5);printf(" W E L C O M E ");
                     strcpy(obj.idNum, activeUserId);
-                    gotoxy(44,8);printf("Link: ");scanf("%s", obj.link);
-                    gotoxy(44,9);printf("username: ");scanf("%s", obj.username);
-                    gotoxy(44,10);printf("password: ");scanf("%s", obj.pw);
+                    SetConsoleTextAttribute(hColor, 8);
+                    gotoxy(44,8);printf("Link: ");
+                    SetConsoleTextAttribute(hColor, 10);
+                    scanf("%s", obj.link);
+                     SetConsoleTextAttribute(hColor, 8);
+                    gotoxy(44,9);printf("username: ");
+                    SetConsoleTextAttribute(hColor, 10);
+                    scanf("%s", obj.username);
+                     SetConsoleTextAttribute(hColor, 8);
+                    gotoxy(44,10);printf("password: ");
+                    SetConsoleTextAttribute(hColor, 10);
+                    scanf("%s", obj.pw);
                     obj.key = key;
+                    SetConsoleTextAttribute(hColor, 8);
                     gotoxy(44,12);system("pause");
                     preserveNewAccData(obj);
                     break;
@@ -226,13 +269,18 @@ void displayAccounts() {    //Display the current user's accounts
     PAD *p = insideFirstAccount;
     int num = 0;
     row = 7;
-
-    gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hColor, 4);
+    gotoxy(45, 2); printf("=====");
+    gotoxy(71, 2); printf("=====");
+    SetConsoleTextAttribute(hColor, 128);
+    gotoxy(51, 2); printf(" UPDATE AN ACCOUNT ");
+    SetConsoleTextAttribute(hColor, 14);
     gotoxy(7, 5); printf("#");
     gotoxy(35, 5); printf("LINK");
     gotoxy(65, 5); printf("USERNAME");
     gotoxy(100, 5); printf("PASSWORD");
-
+   SetConsoleTextAttribute(hColor, 7);
     while (p != NULL) {
         if (strcmp(p->idNum, activeUserId) == 0) {
             num++;
@@ -251,7 +299,10 @@ void displayAccounts() {    //Display the current user's accounts
 void deleteNode() {
     int position;
     row = 14;
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(32, 28);printf("Enter the row number of the account you want to delete: ");
+    SetConsoleTextAttribute(hColor, 10);
     scanf("%d", &position);
 
     if (position == 1) {
@@ -259,7 +310,9 @@ void deleteNode() {
         insideFirstAccount = insideFirstAccount->next;
         free(temp);
         system("cls");
+        SetConsoleTextAttribute(hColor, 279);
         gotoxy(30, 8);printf("Account deleted successfully");
+        SetConsoleTextAttribute(hColor, 8);
         gotoxy(30, 10);system("pause");
         return;
     }
@@ -268,7 +321,13 @@ void deleteNode() {
     for (int i = 1; i < position - 1; i++) {
         if(prev->next == NULL){
             system("cls");
-            gotoxy(30, 8);printf("Invalid request! Row %d is not in the list.", position);
+            SetConsoleTextAttribute(hColor, 4);
+            gotoxy(30, 8);printf("Invalid request! Row ");
+            SetConsoleTextAttribute(hColor, 14);
+            gotoxy(51, 8);printf("%d.", position);
+            SetConsoleTextAttribute(hColor, 4);
+            gotoxy(55, 8);printf("is not in the list.");
+            SetConsoleTextAttribute(hColor, 8);
             gotoxy(30, 10);system("pause");
             return;
         }
@@ -277,8 +336,14 @@ void deleteNode() {
 
     if (prev->next == NULL) {
         system("cls");
-        gotoxy(30, 8);printf("Invalid request! Row %d is not in the list.", position);
-        gotoxy(30, 10);system("pause");
+            SetConsoleTextAttribute(hColor, 4);
+            gotoxy(30, 8);printf("Invalid request! Row ");
+            SetConsoleTextAttribute(hColor, 14);
+            gotoxy(51, 8);printf("%d.", position);
+            SetConsoleTextAttribute(hColor, 4);
+            gotoxy(55, 8);printf("is not in the list.");
+            SetConsoleTextAttribute(hColor, 8);
+            gotoxy(30, 10);system("pause");
         return;
     };
 
@@ -286,12 +351,18 @@ void deleteNode() {
     prev->next = temp->next;
     free(temp);
     system("cls");
+    SetConsoleTextAttribute(hColor, 279);
     gotoxy(50, 11);printf("Account deleted successfully");
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(35, 10);system("pause");
+
     return;
 }
 
 void displayAndDelete() {
+
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hColor, 4);
     if (insideFirstAccount == NULL) {
         system("cls");
         gotoxy(30, 8);printf("The list is empty!");
@@ -303,12 +374,17 @@ void displayAndDelete() {
     int num = 0;
     row = 7;
 
-    gotoxy(45, 2); printf("===== YOUR ACCOUNTS =====");
+    SetConsoleTextAttribute(hColor, 4);
+    gotoxy(45, 2); printf("=====");
+    gotoxy(71, 2); printf("=====");
+    SetConsoleTextAttribute(hColor, 128);
+    gotoxy(51, 2); printf(" UPDATE AN ACCOUNT ");
+    SetConsoleTextAttribute(hColor, 14);
     gotoxy(7, 5); printf("#");
     gotoxy(35, 5); printf("LINK");
     gotoxy(65, 5); printf("USERNAME");
     gotoxy(100, 5); printf("PASSWORD");
-
+    SetConsoleTextAttribute(hColor, 7);
     while (p != NULL) {
         if (strcmp(p->idNum, activeUserId) == 0) {
             num++;
@@ -335,12 +411,18 @@ void updateAccount() {
     PAD *matchingAccounts[256];
     int numMatchingAccounts = 0;
 
-    gotoxy(45, 2); printf("===== UPDATE AN ACCOUNT =====");
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hColor, 4);
+    gotoxy(45, 2); printf("=====");
+    gotoxy(71, 2); printf("=====");
+    SetConsoleTextAttribute(hColor, 128);
+    gotoxy(51, 2); printf(" UPDATE AN ACCOUNT ");
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(7, 5); printf("#");
     gotoxy(35, 5); printf("LINK");
     gotoxy(65, 5); printf("USERNAME");
     gotoxy(100, 5); printf("PASSWORD");
-
+    SetConsoleTextAttribute(hColor, 7);
     while (p != NULL) {
         num++;
         gotoxy(7, row); printf("%d", num);
@@ -353,8 +435,9 @@ void updateAccount() {
     }
 
     p = insideFirstAccount; // reset p to the beginning of the list
-
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(25, 27); printf("Enter the link of the account you want to update: ");
+    SetConsoleTextAttribute(hColor, 10);
     scanf("%s", link);
 
     while (p != NULL) {
@@ -365,8 +448,20 @@ void updateAccount() {
     }
 
     if (numMatchingAccounts == 0) {
-        gotoxy(52, 16); printf("Link not found.\n");
-        gotoxy(45, 17); system("pause");
+        SetConsoleTextAttribute(hColor, 7);
+
+        gotoxy(30, 9);printf("  __| |____________________________________________| |__");
+        gotoxy(30, 10);printf(" (__   ____________________________________________   __)");
+        gotoxy(30, 11);printf("    | |                                            | |");
+        gotoxy(30, 12);printf("    | |                                            | |");
+        gotoxy(30, 13);printf("    | |                                            | |");
+        gotoxy(30, 14);printf("    | |                                            | |");
+        gotoxy(30, 15);printf("  __| |____________________________________________| |__");
+        gotoxy(30, 16);printf(" (__   ____________________________________________   ___) ");
+        gotoxy(30, 17);printf("    | |                                            | | ");
+        SetConsoleTextAttribute(hColor, 4);
+        gotoxy(50, 13); printf("Link not found.");
+        system("pause>0");
         return;
     }
 
@@ -375,11 +470,14 @@ void updateAccount() {
     } else {
         // prompt the user to choose which account to update
         system("cls");
+        SetConsoleTextAttribute(hColor, 14);
         gotoxy(38, 6); printf("Multiple accounts found with the same link.");
+        SetConsoleTextAttribute(hColor, 8);
         for (int i = 0; i < numMatchingAccounts; i++) {
             gotoxy(50, row_matchingAcc + i + 1); printf("%d. %s\n", i + 1, matchingAccounts[i]->username);
         }
         gotoxy(30, row_matchingAcc + numMatchingAccounts + 2); printf("Enter the username of the account you want to update: ");
+        SetConsoleTextAttribute(hColor, 10);
         scanf("%s", newUsername);
 
         // find the account with the entered username
@@ -392,6 +490,7 @@ void updateAccount() {
         }
 
         if (!found) {
+            SetConsoleTextAttribute(hColor, 4);
             gotoxy(52, 16); printf("Account not found.\n");
             gotoxy(45, 17); system("pause");
             return;
@@ -399,34 +498,44 @@ void updateAccount() {
     }
 
     system("cls");
+    SetConsoleTextAttribute(hColor, 13);
     gotoxy(5, 3); printf("Updating account:\n");
+    SetConsoleTextAttribute(hColor, 7);
     gotoxy(10, 5); printf("Link: %s\n", p->link);
     gotoxy(10, 6); printf("Username: %s\n", p->username);
     gotoxy(10, 7); printf("Password: %s\n", p->pw);
 
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(45, 9); printf("What do you want to update?");
     gotoxy(50, 11); printf("1. Username");
     gotoxy(50, 12); printf("2. Password");
     gotoxy(45, 14); printf("Enter your choice: ");
+    SetConsoleTextAttribute(hColor, 10);
     scanf("%d", &choice);
 
     switch (choice) {
         case 1:
+            SetConsoleTextAttribute(hColor, 8);
             gotoxy(42, 18); printf("Enter new username: ");
+            SetConsoleTextAttribute(hColor, 10);
             scanf("%s", newUsername);
             strcpy(p->username, newUsername);
             break;
         case 2:
+            SetConsoleTextAttribute(hColor, 8);
             gotoxy(43, 18); printf("Enter new password: ");
+            SetConsoleTextAttribute(hColor, 10);
             scanf("%s", newPassword);
             strcpy(p->pw, newPassword);
             break;
         default:
+            SetConsoleTextAttribute(hColor, 4);
             gotoxy(52, 18); printf("Invalid choice.\n");
             return;
     }
-
+    SetConsoleTextAttribute(hColor, 12);
     gotoxy(45, 25); printf("Account updated successfully.\n");
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(46, 26); system("pause");
 }
 
@@ -521,15 +630,69 @@ int loginMenu() {
     system("cls");
     int op;
 
-    gotoxy(43,5); printf(" __  __  ____  _  _  __  __ /\\ ");
-    gotoxy(43,6); printf("(  \\/  )( ___)( \\( )(  )(  ))( ");
-    gotoxy(43,7); printf(" )    (  )__)  )  (  )(__)( \\/ ");
-    gotoxy(43,8); printf("(_/\\/\\_)(____)(_)\\_)(______)() ");
-    gotoxy(46,10);printf("1. Log in\n");
-    gotoxy(46,11);printf("2. Create vault \n");
-    gotoxy(46,12);printf("3. Exit\n\n");
-    gotoxy(46,14);printf("Enter your choice(1-3): ");
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hColor, 13);
+    gotoxy(37,7); printf(" ______ ");
+    gotoxy(37,8); printf("/\\  == ");
+    gotoxy(37,9); printf("\\ \\  _-/");
+    gotoxy(37,10); printf(" \\ \\_  ");
+    gotoxy(37,11); printf("  \\/_/  ");
+
+    SetConsoleTextAttribute(hColor, 8);
+    gotoxy(46,9); printf(" __  ");
+    gotoxy(46,10); printf("   \\");
+    gotoxy(46,11); printf("\\/_/");
+
+     SetConsoleTextAttribute(hColor, 14);
+     gotoxy(44,8); printf("\\");
+     gotoxy(42,10); printf("\\");
+     gotoxy(46,10); printf("/\\_");
+
+    SetConsoleTextAttribute(hColor, 13);
+    gotoxy(50,7); printf("  __   __");
+    gotoxy(50,8); printf(" /\\ ""-./   ");
+    gotoxy(50,9); printf(" \\ \\ \\-./\\ ");
+    gotoxy(50,10); printf("  \\ \\_\\ \\ \\_");
+    gotoxy(50,11); printf("   \\/_/  \\/_/");
+
+    SetConsoleTextAttribute(hColor, 14);
+    gotoxy(59,7); printf("_");
+    gotoxy(60,8); printf("\\");
+    gotoxy(61,9); printf("\\");
+    gotoxy(62,10); printf("\\");
+
+    SetConsoleTextAttribute(hColor, 14);
+    gotoxy(64,9); printf(" __ ");
+    gotoxy(67,10); printf("\\");
+    SetConsoleTextAttribute(hColor, 8);
+    gotoxy(64,10); printf("/\\_");
+    gotoxy(64,11); printf("\\/_/ ");
+
+    SetConsoleTextAttribute(hColor, 13);
+    //gotoxy(68,7); printf("  ______ ");
+    //gotoxy(68,8); printf(" /\\  ___\\ ");
+    gotoxy(68,9); printf(" \\ \\___  \\");
+    gotoxy(68,10); printf("  \\/\\_____\\");
+    gotoxy(68,11); printf("   \\/_____/ ");
+
+    SetConsoleTextAttribute(hColor, 14);
+    gotoxy(65,3); printf("      ;   :   ;");
+    gotoxy(65,4); printf("   .   \\_,!,_/   ,");
+    gotoxy(65,5); printf("    `.,'     `.,'");
+    gotoxy(65,6); printf("     /         \\");
+    gotoxy(68,7); printf("  ______     : -- ~");
+    gotoxy(68,8); printf(" /\\  ___\\   /");
+
+    //gotoxy(38,12);printf("[<----- PASSWORD MANAGEMENT SYSTEM ----->]");
+    SetConsoleTextAttribute(hColor, 8);
+    gotoxy(49,14);printf("1. Log in\n");
+    gotoxy(49,15);printf("2. Create vault \n");
+    gotoxy(49,16);printf("3. Exit\n\n");
+    //SetConsoleTextAttribute(hColor, 49);
+    gotoxy(49,18);printf("Enter your choice(1-3): ");
+    SetConsoleTextAttribute(hColor, 10);
     scanf("%d", &op);
+
 
     return op;
 }
@@ -719,7 +882,9 @@ int retrieve(char *username, char *password){
 
         // If the record matches the given username but not the password, print an error message and pause the program.
             if(strcmp(username, obj.username)==0 && strcmp(password, obj.password) != 0){
-                gotoxy(48, 25);printf("Wrong password!");
+                SetConsoleTextAttribute(hColor, 192);
+                gotoxy(48, 25);printf(" Wrong password! ");
+                SetConsoleTextAttribute(hColor, 8);
                 system("pause>0");
                 system("cls");
                 attempt++;
@@ -729,7 +894,9 @@ int retrieve(char *username, char *password){
 
     }else {
         //system("cls");
+         SetConsoleTextAttribute(hColor, 253);
          gotoxy(33, 25);printf("Limit for attempt was reached. Try again next time!");
+         SetConsoleTextAttribute(hColor, 8);
         system("pause>0");
         system("cls");
         exit(0);
