@@ -118,7 +118,6 @@ void login() {
     int i = 0;
     int higa =196;
     hColor = GetStdHandle(STD_OUTPUT_HANDLE);
-
       SetConsoleTextAttribute(hColor, 1);
       gotoxy(40,4);printf("[< ------");
       gotoxy(71,4);printf("------- >]");
@@ -567,14 +566,23 @@ int addAccount() {
     char confirm_password[20];
     char ch;
     int i = 0;
+    hColor = GetStdHandle(STD_OUTPUT_HANDLE);
     sprintf(new_account->idNum, "%d", genIdNum());
 
-     gotoxy(35,5);printf("[< ----- C R E A T E  A C C O U N T ----- >]");
+     SetConsoleTextAttribute(hColor, 3);
+     gotoxy(35,5);printf("[< -----");
+     gotoxy(75,5);printf("----- >]");
+     SetConsoleTextAttribute(hColor, 176);
+     gotoxy(45,5);printf(" C R E A T E  A C C O U N T ");
 
+
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(44,8);printf("Enter fullname: ");
+    SetConsoleTextAttribute(hColor, 10);
     scanf(" %[^\n]", new_account->fullname);
-
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(44,9);printf("Enter username: ");
+    SetConsoleTextAttribute(hColor, 10);
     scanf("%s", new_account->username);
 
     Account obj;
@@ -584,15 +592,17 @@ int addAccount() {
     while(fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.fullname, obj.username, obj.password, &obj.key )== 5){
             obj =  decryption(obj);
 
-            if(strcmp(obj.username, new_account->username) == 0) {
+            if(strcmp(obj.username, new_account->username) == 0){
+                SetConsoleTextAttribute(hColor, 4);
                 gotoxy(25, 14);printf("!!! 'username' already exist. Try again with different username!\n");
                 gotoxy(31, 16);system("pause");
                 return 1;
             }
     }
     fclose(fs);
-
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(44,10);printf("Enter password: ");
+    SetConsoleTextAttribute(hColor, 10);
     while ((ch = getch()) != '\r') {
         if (i < 20 && ch != '\b') {
             new_account->password[i++] = ch;
@@ -604,11 +614,13 @@ int addAccount() {
     }
     new_account->password[i] = '\0';
     int higa =196;
+    SetConsoleTextAttribute(hColor, 8);
     for (int i = 20; i <= 99; i++) {
          gotoxy(i, 26);printf("%c", (char)higa);
     }
-
+    SetConsoleTextAttribute(hColor, 8);
     gotoxy(44,12);printf("Confirm password: ");
+    SetConsoleTextAttribute(hColor, 10);
     i = 0;
     while ((ch = getch()) != '\r') {
         if (i < 20 && ch != '\b') {
@@ -620,9 +632,11 @@ int addAccount() {
         }
     }
     confirm_password[i] = '\0';
-
+    SetConsoleTextAttribute(hColor, 4);
     if (strcmp(new_account->password, confirm_password) != 0) {
+        SetConsoleTextAttribute(hColor, 4);
         gotoxy(37,25);printf("Passwords do not match. Account not created.");
+        SetConsoleTextAttribute(hColor, 8);
         gotoxy(38,27);system("pause");
         free(new_account);
         return 1;
@@ -633,7 +647,7 @@ int addAccount() {
     new_account->next = first_account; // next pointer of the new account to the current first account
 
     first_account = new_account; // first account pointer to the new account
-
+    SetConsoleTextAttribute(hColor, 14);
     gotoxy(44,25);printf("Account added successfully!");
     gotoxy(44,27);system("pause");
 }
