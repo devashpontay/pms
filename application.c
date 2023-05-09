@@ -79,9 +79,6 @@ HANDLE hColor;
 COORD CursorPosition;
 
 int main() {
-    // WRITE CODE HERE
-    // connected to you billona sarap mo
-    // connected ~jerry
 
     srand(time(NULL));
     while(1) {
@@ -580,6 +577,21 @@ int addAccount() {
     gotoxy(44,9);printf("Enter username: ");
     scanf("%s", new_account->username);
 
+    Account obj;
+    FILE *fs;
+    fs = fopen("accountsDB.txt", "r");
+
+    while(fscanf(fs, "%[^@]@%[^@]@%[^@]@%[^@]@%d\n", obj.idNum, obj.fullname, obj.username, obj.password, &obj.key )== 5){
+            obj =  decryption(obj);
+
+            if(strcmp(obj.username, new_account->username) == 0) {
+                gotoxy(25, 14);printf("!!! 'username' already exist. Try again with different username!\n");
+                gotoxy(31, 16);system("pause");
+                return 1;
+            }
+    }
+    fclose(fs);
+
     gotoxy(44,10);printf("Enter password: ");
     while ((ch = getch()) != '\r') {
         if (i < 20 && ch != '\b') {
@@ -877,6 +889,7 @@ int retrieve(char *username, char *password){
             if(strcmp(username, obj.username ) == 0 && strcmp(password, obj.password) == 0){
                 strcpy(activeUserId, obj.idNum);
                 key = obj.key;
+                fclose(fs);
                 return 1;
             }
 
@@ -888,6 +901,7 @@ int retrieve(char *username, char *password){
                 system("pause>0");
                 system("cls");
                 attempt++;
+                fclose(fs);
                 login();
             }
         }
@@ -899,6 +913,7 @@ int retrieve(char *username, char *password){
          SetConsoleTextAttribute(hColor, 8);
         system("pause>0");
         system("cls");
+        fclose(fs);
         exit(0);
     }
 
